@@ -9,9 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        * {
-            font-family: 'Inter', sans-serif;
-        }
+        * { font-family: 'Inter', sans-serif; }
         
         :root {
             --primary-color: #4f46e5;
@@ -44,10 +42,6 @@
             background-color: var(--primary-hover);
         }
         
-        .step-indicator {
-            transition: all 0.3s ease;
-        }
-        
         .step-indicator.active {
             background-color: var(--primary-color);
             color: white;
@@ -56,10 +50,6 @@
         .step-indicator.completed {
             background-color: #10b981;
             color: white;
-        }
-        
-        .currency-input {
-            position: relative;
         }
         
         .currency-input::before {
@@ -72,10 +62,111 @@
             font-weight: 500;
         }
         
-        .currency-input input {
-            padding-left: 28px;
+        .currency-input input { padding-left: 28px; }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
         }
         
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+        }
+        
+        /* Blur effect for gated content */
+        .blurred-content {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        .gate-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        /* Loading & Error Screens */
+        #loadingScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .loader {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #errorScreen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #fee2e2;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 450px;
+            width: 90%;
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Tooltip */
         .tooltip {
             position: relative;
             cursor: help;
@@ -97,82 +188,13 @@
             margin-bottom: 5px;
         }
         
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
+        .payment-schedule-row:nth-child(odd) { background-color: #f9fafb; }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        /* Loading Screen */
-        #loadingScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Error Screen */
-        #errorScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fee2e2;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        /* Results specific styles */
-        .result-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
-        }
-        
-        .payment-schedule-row:nth-child(odd) {
-            background-color: #f9fafb;
-        }
-        
-        .warning-box {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .success-box {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left: 4px solid #10b981;
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            .card-shadow { box-shadow: none; }
         }
     </style>
 </head>
@@ -194,23 +216,107 @@
         </div>
     </div>
 
+    <!-- Lead Capture Modal (for PDF download) -->
+    <div id="leadModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">📄</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Get Your Free PDF Report</h3>
+                <p class="text-gray-600 text-sm">Enter your details to download your personalized quarterly tax report with payment schedule and tax-saving tips.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input type="text" id="modalName" placeholder="John Smith"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                    <input type="email" id="modalEmail" placeholder="john@example.com"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="modalPhone" placeholder="(555) 123-4567"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                
+                <button onclick="submitLeadAndDownload()" id="modalSubmitBtn" 
+                    class="w-full btn-primary text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    📥 Download My PDF Report
+                </button>
+                
+                <button onclick="closeModal()" class="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
+                    Maybe later
+                </button>
+            </div>
+            
+            <p class="text-xs text-gray-400 text-center mt-4">
+                🔒 Your information is secure and will never be shared.
+            </p>
+        </div>
+    </div>
+
+    <!-- Email Results Modal -->
+    <div id="emailModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">📧</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Email Your Results</h3>
+                <p class="text-gray-600 text-sm">We'll send your tax calculation summary and PDF report to your inbox.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input type="text" id="emailModalName" placeholder="John Smith"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                    <input type="email" id="emailModalEmail" placeholder="john@example.com"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="emailModalPhone" placeholder="(555) 123-4567"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
+                </div>
+                
+                <button onclick="submitLeadAndEmail()" id="emailModalSubmitBtn" 
+                    class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
+                    📧 Send to My Email
+                </button>
+                
+                <button onclick="closeEmailModal()" class="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div id="mainContent" class="hidden">
         <!-- Header -->
-        <header class="gradient-bg py-6 px-4">
+        <header class="gradient-bg py-6 px-4 no-print">
             <div class="max-w-3xl mx-auto text-center">
                 <img id="clientLogo" src="" alt="Logo" class="h-12 mx-auto mb-4 hidden">
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Quarterly Estimated Tax Calculator</h1>
-                <p class="text-indigo-100">Calculate your quarterly tax payments and avoid penalties</p>
+                <p class="text-indigo-100">Calculate your quarterly tax payments and avoid IRS penalties</p>
             </div>
         </header>
 
         <!-- Calculator Container -->
         <main class="max-w-3xl mx-auto px-4 py-8">
             <!-- Progress Steps -->
-            <div class="flex justify-between mb-8" id="progressSteps">
+            <div class="flex justify-between mb-8 no-print" id="progressSteps">
                 <div class="flex flex-col items-center">
-                    <div class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-semibold mb-2" data-step="1">1</div>
+                    <div class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-semibold mb-2 bg-gray-200 text-gray-500" data-step="1">1</div>
                     <span class="text-xs text-gray-600 hidden md:block">Income</span>
                 </div>
                 <div class="flex-1 h-0.5 bg-gray-200 self-center mx-2 mt-[-20px]"></div>
@@ -234,16 +340,16 @@
             <div class="bg-white rounded-2xl card-shadow p-6 md:p-8">
                 <!-- Step 1: Income Information -->
                 <div id="step1" class="step-content fade-in">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6">Step 1: Income Information</h2>
-                    <p class="text-gray-600 mb-6">Enter your expected annual income for the tax year.</p>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 1: Income Information</h2>
+                    <p class="text-gray-600 mb-6">Enter your expected annual income for tax year 2025.</p>
                     
                     <div class="space-y-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 W-2 Wages (if any)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Income from traditional employment">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Income from traditional employment with tax withholding">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="w2Wages" value="0" min="0" 
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -252,9 +358,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Self-Employment / Business Income
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="1099 income, freelance, business revenue">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="1099 income, freelance, consulting, business revenue">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="selfEmploymentIncome" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -263,9 +369,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Other Income
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Investments, rental income, dividends, etc.">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Investments, rental income, dividends, interest, etc.">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="otherIncome" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -274,23 +380,23 @@
                     
                     <div class="mt-8 flex justify-end">
                         <button onclick="nextStep(2)" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                            Next →
+                            Next: Deductions →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 2: Deductions -->
                 <div id="step2" class="step-content hidden">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6">Step 2: Deductions & Expenses</h2>
-                    <p class="text-gray-600 mb-6">Enter your business expenses and deductions.</p>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 2: Deductions & Expenses</h2>
+                    <p class="text-gray-600 mb-6">Enter your business expenses and above-the-line deductions.</p>
                     
                     <div class="space-y-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Total Business Expenses
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="All deductible business costs">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Office supplies, software, travel, marketing, etc.">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="businessExpenses" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -298,10 +404,10 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Retirement Contributions (SEP-IRA, Solo 401k, etc.)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Tax-deductible retirement savings">ⓘ</span>
+                                Retirement Contributions
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="SEP-IRA (up to $69,000), Solo 401k, Traditional IRA">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="retirementContributions" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -310,9 +416,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Health Insurance Premiums (Self-Employed)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Premiums paid for yourself and family">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Health, dental, vision premiums for you and family">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="healthInsurance" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -321,7 +427,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Deduction Type</label>
                             <select id="deductionType" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                                <option value="standard">Standard Deduction (Recommended)</option>
+                                <option value="standard">Standard Deduction (Recommended for most)</option>
                                 <option value="itemized">Itemized Deductions</option>
                             </select>
                         </div>
@@ -329,8 +435,9 @@
                         <div id="itemizedSection" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Total Itemized Deductions
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Mortgage interest, state taxes, charity, medical expenses">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="itemizedDeductions" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -342,15 +449,15 @@
                             ← Back
                         </button>
                         <button onclick="nextStep(3)" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                            Next →
+                            Next: Filing Info →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 3: Filing Information -->
                 <div id="step3" class="step-content hidden">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6">Step 3: Filing Information</h2>
-                    <p class="text-gray-600 mb-6">Tell us about your filing status and withholdings.</p>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 3: Filing Information</h2>
+                    <p class="text-gray-600 mb-6">Tell us about your filing status and current withholdings.</p>
                     
                     <div class="space-y-5">
                         <div>
@@ -366,7 +473,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Number of Qualifying Children (under 17)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="For Child Tax Credit calculation">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="For Child Tax Credit - $2,000 per child">ⓘ</span>
                             </label>
                             <input type="number" id="numChildren" value="0" min="0" max="10"
                                 class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
@@ -374,10 +481,10 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                W-2 Federal Tax Withholding (Year-to-Date)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Taxes already withheld from paychecks">ⓘ</span>
+                                W-2 Federal Tax Already Withheld
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Check your recent pay stub - 'Federal Tax Withheld' YTD">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="w2Withholding" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -386,9 +493,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Estimated Payments Already Made This Year
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Quarterly payments already submitted">ⓘ</span>
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Quarterly payments you've already sent to IRS">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="estimatedPaymentsMade" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -396,10 +503,10 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Prior Year Total Tax Liability
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Line 24 from last year's 1040 (for safe harbor)">ⓘ</span>
+                                Last Year's Total Tax (for Safe Harbor)
+                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Line 24 from your 2024 Form 1040">ⓘ</span>
                             </label>
-                            <div class="currency-input">
+                            <div class="currency-input relative">
                                 <input type="number" id="priorYearTax" value="0" min="0"
                                     class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
                             </div>
@@ -419,110 +526,137 @@
                 <!-- Step 4: Results -->
                 <div id="step4" class="step-content hidden">
                     <div class="fade-in">
-                        <!-- Main Result Card -->
+                        <!-- Main Result Card - Always Visible -->
                         <div class="result-card rounded-xl p-6 md:p-8 text-white text-center mb-6">
                             <p class="text-indigo-100 mb-2">Your Quarterly Estimated Payment</p>
                             <h2 class="text-4xl md:text-5xl font-bold mb-2" id="quarterlyAmount">$0</h2>
-                            <p class="text-indigo-200">Due each quarter to avoid penalties</p>
+                            <p class="text-indigo-200">Due each quarter to avoid IRS penalties</p>
                         </div>
 
-                        <!-- Payment Schedule -->
+                        <!-- Annual Summary - Always Visible -->
                         <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center">
-                                <span class="mr-2">📅</span> Payment Schedule
-                            </h3>
+                            <h3 class="font-bold text-gray-800 mb-4">📊 Annual Tax Summary</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <p class="text-gray-500 text-xs mb-1">Total Tax</p>
+                                    <p class="font-bold text-lg" id="summaryTotalTax">$0</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <p class="text-gray-500 text-xs mb-1">Already Paid</p>
+                                    <p class="font-bold text-lg text-emerald-600" id="summaryPaid">$0</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <p class="text-gray-500 text-xs mb-1">Still Owe</p>
+                                    <p class="font-bold text-lg text-red-600" id="summaryOwed">$0</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <p class="text-gray-500 text-xs mb-1">Tax Rate</p>
+                                    <p class="font-bold text-lg" id="summaryRate">0%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Schedule - Always Visible -->
+                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                            <h3 class="font-bold text-gray-800 mb-4">📅 2025 Payment Schedule</h3>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-sm">
                                     <thead>
                                         <tr class="text-left text-gray-500 border-b">
                                             <th class="pb-3 font-medium">Quarter</th>
+                                            <th class="pb-3 font-medium">Period</th>
                                             <th class="pb-3 font-medium">Due Date</th>
                                             <th class="pb-3 font-medium text-right">Amount</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="paymentSchedule">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
+                                    <tbody id="paymentSchedule"></tbody>
                                 </table>
                             </div>
                         </div>
 
-                        <!-- Safe Harbor Status -->
-                        <div id="safeHarborBox" class="p-4 rounded-lg mb-6">
-                            <!-- Populated by JavaScript -->
-                        </div>
+                        <!-- Safe Harbor Status - Always Visible -->
+                        <div id="safeHarborBox" class="p-4 rounded-lg mb-6"></div>
 
-                        <!-- Tax Breakdown -->
-                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center">
-                                <span class="mr-2">📊</span> Tax Breakdown
-                            </h3>
-                            <div class="space-y-3" id="taxBreakdown">
-                                <!-- Populated by JavaScript -->
+                        <!-- GATED CONTENT - Detailed Breakdown -->
+                        <div class="relative mb-6">
+                            <div id="detailedBreakdown" class="bg-gray-50 rounded-xl p-6">
+                                <h3 class="font-bold text-gray-800 mb-4">📋 Detailed Tax Breakdown</h3>
+                                <div class="space-y-3" id="taxBreakdown"></div>
                             </div>
-                        </div>
-
-                        <!-- Tax Saving Tips -->
-                        <div class="bg-emerald-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-emerald-800 mb-4 flex items-center">
-                                <span class="mr-2">💡</span> Tax Saving Opportunities
-                            </h3>
-                            <div id="taxTips" class="space-y-3 text-emerald-700">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Lead Capture -->
-                        <div id="leadCaptureSection" class="bg-indigo-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-indigo-800 mb-2">📧 Get Your Detailed PDF Report</h3>
-                            <p class="text-indigo-600 text-sm mb-4">Enter your info to receive a comprehensive breakdown with payment vouchers.</p>
                             
-                            <div class="space-y-4">
-                                <input type="text" id="leadName" placeholder="Your Name"
-                                    class="w-full px-4 py-3 border border-indigo-200 rounded-lg focus:outline-none focus:border-indigo-500">
-                                <input type="email" id="leadEmail" placeholder="Email Address"
-                                    class="w-full px-4 py-3 border border-indigo-200 rounded-lg focus:outline-none focus:border-indigo-500">
-                                <input type="tel" id="leadPhone" placeholder="Phone Number (optional)"
-                                    class="w-full px-4 py-3 border border-indigo-200 rounded-lg focus:outline-none focus:border-indigo-500">
-                                
-                                <button onclick="submitLead()" id="submitLeadBtn" class="w-full btn-primary text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                                    📄 Get My PDF Report
-                                </button>
+                            <!-- Gate Overlay -->
+                            <div id="breakdownGate" class="gate-overlay rounded-xl">
+                                <div class="text-center p-6">
+                                    <div class="text-4xl mb-3">🔒</div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Unlock Full Tax Breakdown</h4>
+                                    <p class="text-gray-600 text-sm mb-4">Enter your email to see the detailed breakdown and download your PDF report.</p>
+                                    <button onclick="openModal()" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                                        Unlock Now - It's Free
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Thank You Message (hidden initially) -->
-                        <div id="thankYouMessage" class="hidden bg-emerald-50 rounded-xl p-6 mb-6 text-center">
-                            <div class="text-4xl mb-3">✅</div>
-                            <h3 class="font-bold text-emerald-800 mb-2">Report Sent!</h3>
-                            <p class="text-emerald-600">Check your email for your detailed PDF report.</p>
+                        <!-- GATED CONTENT - Tax Saving Tips -->
+                        <div class="relative mb-6">
+                            <div id="taxTipsSection" class="bg-emerald-50 rounded-xl p-6">
+                                <h3 class="font-bold text-emerald-800 mb-4">💡 Personalized Tax Saving Tips</h3>
+                                <div id="taxTips" class="space-y-3 text-emerald-700"></div>
+                            </div>
+                            
+                            <!-- Gate Overlay -->
+                            <div id="tipsGate" class="gate-overlay rounded-xl">
+                                <div class="text-center p-6">
+                                    <div class="text-4xl mb-3">💡</div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Get Personalized Tax Tips</h4>
+                                    <p class="text-gray-600 text-sm mb-4">See how you could save money on taxes with our personalized recommendations.</p>
+                                    <button onclick="openModal()" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-700">
+                                        Show My Tips - Free
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <button onclick="downloadPDF()" class="flex-1 bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-all flex items-center justify-center">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 no-print">
+                            <button onclick="handlePDFDownload()" class="bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-all flex items-center justify-center">
                                 <span class="mr-2">📥</span> Download PDF
                             </button>
-                            <button onclick="startOver()" class="flex-1 border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all flex items-center justify-center">
-                                <span class="mr-2">🔄</span> Start Over
+                            <button onclick="handleEmailResults()" class="bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center">
+                                <span class="mr-2">📧</span> Email Results
+                            </button>
+                            <button onclick="window.print()" class="border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all flex items-center justify-center">
+                                <span class="mr-2">🖨️</span> Print
                             </button>
                         </div>
 
                         <!-- CTA Button -->
-                        <div class="mt-6">
-                            <a href="#" id="ctaButton" class="block w-full btn-primary text-white py-4 rounded-lg font-semibold text-center hover:shadow-lg transition-all">
-                                📞 Schedule a Tax Consultation
+                        <div class="no-print">
+                            <a href="#" id="ctaButton" class="block w-full btn-primary text-white py-4 rounded-lg font-semibold text-center hover:shadow-lg transition-all text-lg">
+                                📞 Schedule a Free Tax Consultation
                             </a>
+                            <p class="text-center text-gray-500 text-sm mt-2">Get expert help with your quarterly tax payments</p>
+                        </div>
+
+                        <!-- Start Over -->
+                        <div class="mt-6 text-center no-print">
+                            <button onclick="startOver()" class="text-indigo-600 font-medium hover:underline">
+                                ↩️ Start Over with New Numbers
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <footer class="mt-8 text-center text-gray-500 text-sm">
-                <p>This calculator provides estimates only and should not be considered tax advice.</p>
-                <p class="mt-1">Consult a qualified tax professional for personalized guidance.</p>
-                <p class="mt-3" id="footerBranding">Powered by <span id="clientName">Your Tax Pro</span></p>
+            <!-- Trust Indicators -->
+            <div class="mt-8 text-center text-gray-500 text-sm no-print">
+                <p>✓ Free to use ✓ No signup required ✓ IRS-compliant calculations</p>
+                <p class="mt-2">This calculator provides estimates only. Consult a tax professional for advice.</p>
+            </div>
+
+            <!-- Footer Branding -->
+            <footer class="mt-8 text-center no-print">
+                <p class="text-gray-400 text-sm">Powered by <span id="clientName" class="font-medium">Your Tax Professional</span></p>
             </footer>
         </main>
     </div>
@@ -534,9 +668,10 @@
         let clientConfig = null;
         let calculationResults = null;
         let currentStep = 1;
+        let leadCaptured = false;
 
-        // 2025 Tax Year Constants
         const TAX_YEAR = 2025;
+        
         const STANDARD_DEDUCTIONS = {
             single: 15000,
             married_jointly: 30000,
@@ -583,12 +718,11 @@
             ]
         };
 
-        // Quarterly Due Dates for 2025
         const QUARTERLY_DUE_DATES = [
             { quarter: 'Q1', date: 'April 15, 2025', period: 'Jan 1 - Mar 31' },
             { quarter: 'Q2', date: 'June 16, 2025', period: 'Apr 1 - May 31' },
-            { quarter: 'Q3', date: 'September 15, 2025', period: 'Jun 1 - Aug 31' },
-            { quarter: 'Q4', date: 'January 15, 2026', period: 'Sep 1 - Dec 31' }
+            { quarter: 'Q3', date: 'Sept 15, 2025', period: 'Jun 1 - Aug 31' },
+            { quarter: 'Q4', date: 'Jan 15, 2026', period: 'Sep 1 - Dec 31' }
         ];
 
         // ============================================
@@ -639,30 +773,26 @@
         function applyBranding() {
             if (!clientConfig) return;
 
-            // Apply primary color
             if (clientConfig.primaryColor) {
                 document.documentElement.style.setProperty('--primary-color', clientConfig.primaryColor);
                 document.documentElement.style.setProperty('--primary-hover', adjustColor(clientConfig.primaryColor, -20));
             }
 
-            // Apply logo
             if (clientConfig.logo) {
                 const logoEl = document.getElementById('clientLogo');
                 logoEl.src = clientConfig.logo;
                 logoEl.classList.remove('hidden');
             }
 
-            // Apply client name
             if (clientConfig.client) {
                 document.getElementById('clientName').textContent = clientConfig.client;
             }
 
-            // Apply CTA button
             if (clientConfig.ctaUrl) {
                 document.getElementById('ctaButton').href = clientConfig.ctaUrl;
             }
             if (clientConfig.ctaText) {
-                document.getElementById('ctaButton').textContent = clientConfig.ctaText;
+                document.getElementById('ctaButton').innerHTML = clientConfig.ctaText;
             }
         }
 
@@ -676,13 +806,160 @@
         }
 
         // ============================================
+        // MODAL FUNCTIONS
+        // ============================================
+        function openModal() {
+            document.getElementById('leadModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('leadModal').classList.add('hidden');
+        }
+
+        function openEmailModal() {
+            document.getElementById('emailModal').classList.remove('hidden');
+        }
+
+        function closeEmailModal() {
+            document.getElementById('emailModal').classList.add('hidden');
+        }
+
+        // ============================================
+        // LEAD CAPTURE
+        // ============================================
+        async function submitLeadAndDownload() {
+            const name = document.getElementById('modalName').value.trim();
+            const email = document.getElementById('modalEmail').value.trim();
+            const phone = document.getElementById('modalPhone').value.trim();
+
+            if (!name || !email) {
+                alert('Please enter your name and email address.');
+                return;
+            }
+
+            const btn = document.getElementById('modalSubmitBtn');
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+
+            try {
+                await sendToWebhook(name, email, phone, 'pdf_download');
+                leadCaptured = true;
+                unlockGatedContent();
+                closeModal();
+                downloadPDF();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            btn.textContent = '📥 Download My PDF Report';
+            btn.disabled = false;
+        }
+
+        async function submitLeadAndEmail() {
+            const name = document.getElementById('emailModalName').value.trim();
+            const email = document.getElementById('emailModalEmail').value.trim();
+            const phone = document.getElementById('emailModalPhone').value.trim();
+
+            if (!name || !email) {
+                alert('Please enter your name and email address.');
+                return;
+            }
+
+            const btn = document.getElementById('emailModalSubmitBtn');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                await sendToWebhook(name, email, phone, 'email_results');
+                leadCaptured = true;
+                unlockGatedContent();
+                closeEmailModal();
+                
+                // Show success message
+                alert('✅ Your results have been sent to ' + email);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            btn.textContent = '📧 Send to My Email';
+            btn.disabled = false;
+        }
+
+        async function sendToWebhook(name, email, phone, source) {
+            if (clientConfig && clientConfig.webhook) {
+                const r = calculationResults;
+                
+                await fetch(clientConfig.webhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'no-cors',
+                    body: JSON.stringify({
+                        // Contact info
+                        name: name,
+                        firstName: name.split(' ')[0],
+                        lastName: name.split(' ').slice(1).join(' '),
+                        email: email,
+                        phone: phone,
+                        
+                        // Source tracking
+                        source: 'Quarterly Tax Calculator',
+                        leadSource: source,
+                        calculatorType: 'quarterly_estimated_tax',
+                        
+                        // Tax calculation results
+                        quarterlyPayment: r.quarterlyPayment,
+                        totalTax: r.totalTax,
+                        remainingTaxDue: r.remainingTaxDue,
+                        grossIncome: r.grossIncome,
+                        selfEmploymentIncome: r.selfEmploymentIncome,
+                        selfEmploymentTax: r.selfEmploymentTax,
+                        federalIncomeTax: r.federalIncomeTax,
+                        effectiveTaxRate: r.effectiveTaxRate.toFixed(1) + '%',
+                        filingStatus: r.filingStatus,
+                        numChildren: r.numChildren,
+                        
+                        // Safe harbor info
+                        meetsSafeHarbor: r.meetsSafeHarbor,
+                        priorYearTax: r.priorYearTax,
+                        
+                        // Metadata
+                        timestamp: new Date().toISOString(),
+                        taxYear: TAX_YEAR
+                    })
+                });
+            }
+        }
+
+        function unlockGatedContent() {
+            document.getElementById('breakdownGate').style.display = 'none';
+            document.getElementById('tipsGate').style.display = 'none';
+            document.getElementById('detailedBreakdown').classList.remove('blurred-content');
+            document.getElementById('taxTipsSection').classList.remove('blurred-content');
+        }
+
+        function handlePDFDownload() {
+            if (leadCaptured) {
+                downloadPDF();
+            } else {
+                openModal();
+            }
+        }
+
+        function handleEmailResults() {
+            if (leadCaptured) {
+                alert('Your results were already sent to your email!');
+            } else {
+                openEmailModal();
+            }
+        }
+
+        // ============================================
         // STEP NAVIGATION
         // ============================================
         function nextStep(step) {
             document.getElementById(`step${currentStep}`).classList.add('hidden');
             document.getElementById(`step${step}`).classList.remove('hidden');
             
-            // Update progress indicators
             document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
             document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.add('completed');
             document.querySelector(`.step-indicator[data-step="${step}"]`).classList.add('active');
@@ -695,7 +972,6 @@
             document.getElementById(`step${currentStep}`).classList.add('hidden');
             document.getElementById(`step${step}`).classList.remove('hidden');
             
-            // Update progress indicators
             document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
             document.querySelector(`.step-indicator[data-step="${step}"]`).classList.remove('completed');
             document.querySelector(`.step-indicator[data-step="${step}"]`).classList.add('active');
@@ -705,23 +981,21 @@
 
         function startOver() {
             currentStep = 1;
+            leadCaptured = false;
             
-            // Reset all step indicators
             document.querySelectorAll('.step-indicator').forEach((el, index) => {
                 el.classList.remove('active', 'completed');
                 if (index === 0) el.classList.add('active');
-                else el.classList.add('bg-gray-200', 'text-gray-500');
             });
             
-            // Show step 1, hide others
             document.querySelectorAll('.step-content').forEach((el, index) => {
                 if (index === 0) el.classList.remove('hidden');
                 else el.classList.add('hidden');
             });
             
-            // Reset lead capture
-            document.getElementById('leadCaptureSection').classList.remove('hidden');
-            document.getElementById('thankYouMessage').classList.add('hidden');
+            // Reset gates
+            document.getElementById('breakdownGate').style.display = 'flex';
+            document.getElementById('tipsGate').style.display = 'flex';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -730,7 +1004,6 @@
         // TAX CALCULATIONS
         // ============================================
         function calculateTax() {
-            // Gather inputs
             const w2Wages = parseFloat(document.getElementById('w2Wages').value) || 0;
             const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
             const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
@@ -745,33 +1018,25 @@
             const deductionType = document.getElementById('deductionType').value;
             const itemizedDeductions = parseFloat(document.getElementById('itemizedDeductions').value) || 0;
 
-            // Calculate Net Self-Employment Income
             const netSelfEmployment = Math.max(0, selfEmploymentIncome - businessExpenses);
 
-            // Calculate Self-Employment Tax
-            const seTaxableIncome = netSelfEmployment * 0.9235; // 92.35% is taxable
-            const socialSecurityTax = Math.min(seTaxableIncome, 176100) * 0.124; // 2025 SS wage base
+            const seTaxableIncome = netSelfEmployment * 0.9235;
+            const socialSecurityTax = Math.min(seTaxableIncome, 176100) * 0.124;
             const medicareTax = seTaxableIncome * 0.029;
-            const additionalMedicare = Math.max(0, seTaxableIncome - 200000) * 0.009; // Additional Medicare
+            const additionalMedicare = Math.max(0, seTaxableIncome - 200000) * 0.009;
             const selfEmploymentTax = socialSecurityTax + medicareTax + additionalMedicare;
             const deductibleSETax = selfEmploymentTax / 2;
 
-            // Calculate Gross Income
             const grossIncome = w2Wages + netSelfEmployment + otherIncome;
-
-            // Calculate AGI
             const agi = grossIncome - deductibleSETax - retirementContributions - healthInsurance;
 
-            // Determine Deduction
             const standardDeduction = STANDARD_DEDUCTIONS[filingStatus];
             const deduction = (deductionType === 'itemized' && itemizedDeductions > standardDeduction) 
                 ? itemizedDeductions 
                 : standardDeduction;
 
-            // Calculate Taxable Income
             const taxableIncome = Math.max(0, agi - deduction);
 
-            // Calculate Federal Income Tax
             const brackets = TAX_BRACKETS[filingStatus];
             let federalIncomeTax = 0;
             let remainingIncome = taxableIncome;
@@ -783,80 +1048,34 @@
                 remainingIncome -= taxableAtBracket;
             }
 
-            // Calculate Child Tax Credit (simplified)
-            const childTaxCredit = numChildren * 2000; // $2,000 per child
+            const childTaxCredit = numChildren * 2000;
             const appliedChildCredit = Math.min(childTaxCredit, federalIncomeTax);
 
-            // Total Tax Before Credits
             const totalTaxBeforeCredits = federalIncomeTax + selfEmploymentTax;
-            
-            // Total Tax After Credits
             const totalTax = Math.max(0, totalTaxBeforeCredits - appliedChildCredit);
 
-            // Total Payments Already Made
             const totalPaymentsMade = w2Withholding + estimatedPaymentsMade;
-
-            // Remaining Tax Due
             const remainingTaxDue = Math.max(0, totalTax - totalPaymentsMade);
-
-            // Quarterly Payment Amount
             const quarterlyPayment = remainingTaxDue / 4;
 
-            // Safe Harbor Calculations
             const safeHarbor90 = totalTax * 0.90;
-            const safeHarbor100 = priorYearTax; // 100% of prior year (110% if AGI > $150k)
             const safeHarborHighIncome = agi > 150000 ? priorYearTax * 1.10 : priorYearTax;
 
-            // Effective Tax Rate
             const effectiveTaxRate = grossIncome > 0 ? (totalTax / grossIncome) * 100 : 0;
 
-            // Store results
             calculationResults = {
-                // Income
-                w2Wages,
-                selfEmploymentIncome,
-                otherIncome,
-                businessExpenses,
-                netSelfEmployment,
-                grossIncome,
-                
-                // Deductions & Adjustments
-                retirementContributions,
-                healthInsurance,
-                deductibleSETax,
-                deduction,
-                deductionType,
-                agi,
-                taxableIncome,
-                
-                // Taxes
-                selfEmploymentTax,
-                socialSecurityTax,
-                medicareTax,
-                federalIncomeTax,
-                childTaxCredit: appliedChildCredit,
-                totalTax,
-                
-                // Payments
-                w2Withholding,
-                estimatedPaymentsMade,
-                totalPaymentsMade,
-                remainingTaxDue,
-                quarterlyPayment,
-                
-                // Safe Harbor
-                priorYearTax,
-                safeHarbor90,
+                w2Wages, selfEmploymentIncome, otherIncome, businessExpenses,
+                netSelfEmployment, grossIncome, retirementContributions,
+                healthInsurance, deductibleSETax, deduction, deductionType,
+                agi, taxableIncome, selfEmploymentTax, socialSecurityTax,
+                medicareTax, federalIncomeTax, childTaxCredit: appliedChildCredit,
+                totalTax, w2Withholding, estimatedPaymentsMade, totalPaymentsMade,
+                remainingTaxDue, quarterlyPayment, priorYearTax, safeHarbor90,
                 safeHarborHighIncome,
-                meetsSafeHarbor: totalPaymentsMade >= Math.min(safeHarbor90, safeHarborHighIncome),
-                
-                // Other
-                effectiveTaxRate,
-                filingStatus,
-                numChildren
+                meetsSafeHarbor: totalPaymentsMade >= Math.min(safeHarbor90, safeHarborHighIncome || Infinity),
+                effectiveTaxRate, filingStatus, numChildren
             };
 
-            // Display results
             displayResults();
             nextStep(4);
         }
@@ -867,94 +1086,139 @@
         function displayResults() {
             const r = calculationResults;
 
-            // Quarterly Amount
+            // Main quarterly amount
             document.getElementById('quarterlyAmount').textContent = formatCurrency(r.quarterlyPayment);
 
-            // Payment Schedule
+            // Summary cards
+            document.getElementById('summaryTotalTax').textContent = formatCurrency(r.totalTax);
+            document.getElementById('summaryPaid').textContent = formatCurrency(r.totalPaymentsMade);
+            document.getElementById('summaryOwed').textContent = formatCurrency(r.remainingTaxDue);
+            document.getElementById('summaryRate').textContent = r.effectiveTaxRate.toFixed(1) + '%';
+
+            // Payment schedule
             const scheduleHtml = QUARTERLY_DUE_DATES.map(q => `
                 <tr class="payment-schedule-row">
-                    <td class="py-3 font-medium">${q.quarter}</td>
+                    <td class="py-3 font-semibold">${q.quarter}</td>
+                    <td class="py-3 text-gray-600">${q.period}</td>
                     <td class="py-3">${q.date}</td>
-                    <td class="py-3 text-right font-semibold">${formatCurrency(r.quarterlyPayment)}</td>
+                    <td class="py-3 text-right font-bold">${formatCurrency(r.quarterlyPayment)}</td>
                 </tr>
             `).join('');
             document.getElementById('paymentSchedule').innerHTML = scheduleHtml;
 
-            // Safe Harbor Box
+            // Safe harbor
             const safeHarborBox = document.getElementById('safeHarborBox');
-            if (r.meetsSafeHarbor) {
+            if (r.meetsSafeHarbor || r.priorYearTax === 0) {
                 safeHarborBox.className = 'success-box p-4 rounded-lg mb-6';
                 safeHarborBox.innerHTML = `
-                    <h4 class="font-bold text-emerald-800 mb-2">✅ Safe Harbor Met</h4>
-                    <p class="text-emerald-700 text-sm">Based on your payments, you're on track to meet safe harbor requirements and avoid underpayment penalties.</p>
+                    <h4 class="font-bold text-emerald-800 mb-2">✅ On Track - No Penalty Risk</h4>
+                    <p class="text-emerald-700 text-sm">Based on your current payments, you're meeting safe harbor requirements. Keep making your quarterly payments on time to avoid penalties.</p>
                 `;
             } else {
                 safeHarborBox.className = 'warning-box p-4 rounded-lg mb-6';
                 safeHarborBox.innerHTML = `
-                    <h4 class="font-bold text-amber-800 mb-2">⚠️ Safe Harbor Warning</h4>
-                    <p class="text-amber-700 text-sm mb-2">You may be subject to underpayment penalties. To meet safe harbor, pay at least:</p>
+                    <h4 class="font-bold text-amber-800 mb-2">⚠️ Underpayment Penalty Risk</h4>
+                    <p class="text-amber-700 text-sm mb-2">You may face IRS penalties. To avoid penalties, ensure you pay at least one of these amounts:</p>
                     <ul class="text-amber-700 text-sm ml-4 list-disc">
-                        <li>90% of this year's tax: ${formatCurrency(r.safeHarbor90)}</li>
-                        <li>100%/110% of prior year tax: ${formatCurrency(r.safeHarborHighIncome)}</li>
+                        <li>90% of this year's tax: <strong>${formatCurrency(r.safeHarbor90)}</strong></li>
+                        ${r.priorYearTax > 0 ? `<li>100% of last year's tax: <strong>${formatCurrency(r.safeHarborHighIncome)}</strong></li>` : ''}
                     </ul>
                 `;
             }
 
-            // Tax Breakdown
+            // Detailed breakdown (gated)
             const breakdownHtml = `
-                <div class="flex justify-between py-2 border-b border-gray-200">
+                <div class="flex justify-between py-2 border-b">
                     <span class="text-gray-600">Gross Income</span>
                     <span class="font-semibold">${formatCurrency(r.grossIncome)}</span>
                 </div>
-                <div class="flex justify-between py-2 border-b border-gray-200">
-                    <span class="text-gray-600">Self-Employment Tax</span>
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">− Business Expenses</span>
+                    <span class="font-semibold text-red-600">-${formatCurrency(r.businessExpenses)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">Net Self-Employment Income</span>
+                    <span class="font-semibold">${formatCurrency(r.netSelfEmployment)}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">Self-Employment Tax (15.3%)</span>
                     <span class="font-semibold">${formatCurrency(r.selfEmploymentTax)}</span>
                 </div>
-                <div class="flex justify-between py-2 border-b border-gray-200">
+                <div class="flex justify-between py-2 border-b">
                     <span class="text-gray-600">Federal Income Tax</span>
                     <span class="font-semibold">${formatCurrency(r.federalIncomeTax)}</span>
                 </div>
                 ${r.childTaxCredit > 0 ? `
-                <div class="flex justify-between py-2 border-b border-gray-200">
-                    <span class="text-gray-600">Child Tax Credit</span>
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">− Child Tax Credit (${r.numChildren} children)</span>
                     <span class="font-semibold text-emerald-600">-${formatCurrency(r.childTaxCredit)}</span>
                 </div>
                 ` : ''}
-                <div class="flex justify-between py-2 border-b border-gray-200">
-                    <span class="text-gray-600">Total Tax Liability</span>
+                <div class="flex justify-between py-2 border-b bg-gray-100 px-2 rounded">
+                    <span class="font-bold">Total Tax Liability</span>
                     <span class="font-bold">${formatCurrency(r.totalTax)}</span>
                 </div>
-                <div class="flex justify-between py-2 border-b border-gray-200">
-                    <span class="text-gray-600">Less: Withholding & Payments</span>
-                    <span class="font-semibold text-emerald-600">-${formatCurrency(r.totalPaymentsMade)}</span>
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">− W-2 Withholding</span>
+                    <span class="font-semibold text-emerald-600">-${formatCurrency(r.w2Withholding)}</span>
                 </div>
-                <div class="flex justify-between py-2 bg-indigo-50 px-3 rounded-lg mt-2">
+                <div class="flex justify-between py-2 border-b">
+                    <span class="text-gray-600">− Estimated Payments Made</span>
+                    <span class="font-semibold text-emerald-600">-${formatCurrency(r.estimatedPaymentsMade)}</span>
+                </div>
+                <div class="flex justify-between py-3 bg-indigo-100 px-3 rounded-lg mt-2">
                     <span class="font-bold text-indigo-800">Remaining Tax Due</span>
                     <span class="font-bold text-indigo-800">${formatCurrency(r.remainingTaxDue)}</span>
-                </div>
-                <div class="flex justify-between py-2 mt-2">
-                    <span class="text-gray-600">Effective Tax Rate</span>
-                    <span class="font-semibold">${r.effectiveTaxRate.toFixed(1)}%</span>
                 </div>
             `;
             document.getElementById('taxBreakdown').innerHTML = breakdownHtml;
 
-            // Tax Tips
+            // Tax tips (gated)
             const tips = [];
             
-            if (r.retirementContributions < 23000) {
-                tips.push(`<p><strong>Maximize Retirement Contributions:</strong> Consider contributing more to a SEP-IRA (up to $69,000) or Solo 401(k) to reduce taxable income.</p>`);
+            if (r.netSelfEmployment > 50000 && r.selfEmploymentTax > 7000) {
+                const savings = Math.round(r.selfEmploymentTax * 0.25);
+                tips.push(`
+                    <div class="bg-white p-4 rounded-lg border border-emerald-200">
+                        <h4 class="font-semibold text-emerald-800 mb-1">💼 Consider S-Corp Election</h4>
+                        <p class="text-sm">At your income level, electing S-Corp status could save you approximately <strong>${formatCurrency(savings)}</strong> in self-employment tax annually.</p>
+                    </div>
+                `);
             }
             
-            if (r.netSelfEmployment > 40000 && r.selfEmploymentTax > 6000) {
-                tips.push(`<p><strong>Consider S-Corp Election:</strong> At your income level, electing S-Corp status could save you ${formatCurrency(r.selfEmploymentTax * 0.25)} or more in self-employment tax.</p>`);
+            if (r.retirementContributions < 20000 && r.netSelfEmployment > 30000) {
+                tips.push(`
+                    <div class="bg-white p-4 rounded-lg border border-emerald-200">
+                        <h4 class="font-semibold text-emerald-800 mb-1">🏦 Maximize Retirement Contributions</h4>
+                        <p class="text-sm">You could contribute up to <strong>$69,000</strong> to a SEP-IRA or Solo 401(k), reducing your taxable income significantly.</p>
+                    </div>
+                `);
             }
             
-            if (r.healthInsurance === 0 && r.netSelfEmployment > 0) {
-                tips.push(`<p><strong>Health Insurance Deduction:</strong> If you pay for your own health insurance, this is a deductible expense that can lower your AGI.</p>`);
+            if (r.healthInsurance === 0 && r.netSelfEmployment > 20000) {
+                tips.push(`
+                    <div class="bg-white p-4 rounded-lg border border-emerald-200">
+                        <h4 class="font-semibold text-emerald-800 mb-1">🏥 Health Insurance Deduction</h4>
+                        <p class="text-sm">If you pay for your own health insurance, premiums are 100% deductible and reduce your AGI directly.</p>
+                    </div>
+                `);
             }
             
-            tips.push(`<p><strong>Track All Business Expenses:</strong> Ensure you're capturing home office, mileage, equipment, and professional development costs.</p>`);
+            tips.push(`
+                <div class="bg-white p-4 rounded-lg border border-emerald-200">
+                    <h4 class="font-semibold text-emerald-800 mb-1">📝 Track All Business Expenses</h4>
+                    <p class="text-sm">Make sure you're capturing home office, vehicle mileage (67¢/mile in 2025), equipment, and professional development costs.</p>
+                </div>
+            `);
+
+            if (r.quarterlyPayment > 1000) {
+                tips.push(`
+                    <div class="bg-white p-4 rounded-lg border border-emerald-200">
+                        <h4 class="font-semibold text-emerald-800 mb-1">📅 Set Up Automatic Payments</h4>
+                        <p class="text-sm">Use EFTPS.gov to schedule automatic quarterly payments so you never miss a deadline and avoid penalties.</p>
+                    </div>
+                `);
+            }
             
             document.getElementById('taxTips').innerHTML = tips.join('');
         }
@@ -969,58 +1233,6 @@
         }
 
         // ============================================
-        // LEAD CAPTURE
-        // ============================================
-        async function submitLead() {
-            const name = document.getElementById('leadName').value.trim();
-            const email = document.getElementById('leadEmail').value.trim();
-            const phone = document.getElementById('leadPhone').value.trim();
-
-            if (!name || !email) {
-                alert('Please enter your name and email address.');
-                return;
-            }
-
-            const btn = document.getElementById('submitLeadBtn');
-            btn.textContent = 'Sending...';
-            btn.disabled = true;
-
-            try {
-                // Send to webhook
-                if (clientConfig && clientConfig.webhook) {
-                    await fetch(clientConfig.webhook, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        mode: 'no-cors',
-                        body: JSON.stringify({
-                            name,
-                            email,
-                            phone,
-                            source: 'Quarterly Tax Calculator',
-                            calculatorType: 'quarterly_estimated_tax',
-                            results: {
-                                quarterlyPayment: calculationResults.quarterlyPayment,
-                                totalTax: calculationResults.totalTax,
-                                grossIncome: calculationResults.grossIncome,
-                                effectiveTaxRate: calculationResults.effectiveTaxRate
-                            }
-                        })
-                    });
-                }
-
-                // Show thank you message
-                document.getElementById('leadCaptureSection').classList.add('hidden');
-                document.getElementById('thankYouMessage').classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Lead submission error:', error);
-                alert('There was an error submitting your information. Please try again.');
-                btn.textContent = '📄 Get My PDF Report';
-                btn.disabled = false;
-            }
-        }
-
-        // ============================================
         // PDF GENERATION
         // ============================================
         function downloadPDF() {
@@ -1028,63 +1240,81 @@
             const doc = new jsPDF();
             const r = calculationResults;
 
-            // Colors
             const primaryColor = clientConfig?.primaryColor || '#4f46e5';
             const rgb = hexToRgb(primaryColor);
 
             // Header
             doc.setFillColor(rgb.r, rgb.g, rgb.b);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.rect(0, 0, 210, 45, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
+            doc.setFontSize(24);
             doc.setFont('helvetica', 'bold');
-            doc.text('Quarterly Estimated Tax Report', 105, 20, { align: 'center' });
+            doc.text('Quarterly Tax Report', 105, 18, { align: 'center' });
             
-            doc.setFontSize(12);
+            doc.setFontSize(14);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Tax Year ${TAX_YEAR}`, 105, 30, { align: 'center' });
+            doc.text(`Tax Year ${TAX_YEAR}`, 105, 28, { align: 'center' });
 
-            // Client branding
             if (clientConfig?.client) {
-                doc.setFontSize(10);
-                doc.text(`Prepared by ${clientConfig.client}`, 105, 37, { align: 'center' });
+                doc.setFontSize(11);
+                doc.text(`Prepared by ${clientConfig.client}`, 105, 38, { align: 'center' });
             }
 
-            // Reset text color
             doc.setTextColor(0, 0, 0);
             let y = 55;
 
-            // Main Result Box
+            // Main result box
             doc.setFillColor(rgb.r, rgb.g, rgb.b);
-            doc.roundedRect(20, y, 170, 30, 3, 3, 'F');
+            doc.roundedRect(20, y, 170, 35, 3, 3, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(12);
-            doc.text('Your Quarterly Estimated Payment:', 105, y + 10, { align: 'center' });
-            doc.setFontSize(24);
+            doc.text('Your Quarterly Estimated Payment', 105, y + 12, { align: 'center' });
+            doc.setFontSize(28);
             doc.setFont('helvetica', 'bold');
-            doc.text(formatCurrency(r.quarterlyPayment), 105, y + 23, { align: 'center' });
+            doc.text(formatCurrency(r.quarterlyPayment), 105, y + 28, { align: 'center' });
             
-            y += 40;
+            y += 45;
             doc.setTextColor(0, 0, 0);
             doc.setFont('helvetica', 'normal');
 
-            // Payment Schedule
-            doc.setFontSize(14);
+            // Summary
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
-            doc.text('Payment Schedule', 20, y);
+            doc.text('Annual Summary', 20, y);
             y += 8;
 
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
+            const summaryData = [
+                ['Total Tax Liability', formatCurrency(r.totalTax)],
+                ['Already Paid (Withholding + Estimated)', formatCurrency(r.totalPaymentsMade)],
+                ['Remaining Tax Due', formatCurrency(r.remainingTaxDue)],
+                ['Effective Tax Rate', r.effectiveTaxRate.toFixed(1) + '%']
+            ];
             
-            // Table header
+            summaryData.forEach((item, i) => {
+                doc.text(item[0], 25, y + 5);
+                doc.text(item[1], 170, y + 5, { align: 'right' });
+                y += 7;
+            });
+
+            y += 10;
+
+            // Payment Schedule
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('2025 Payment Schedule', 20, y);
+            y += 8;
+
+            doc.setFontSize(10);
             doc.setFillColor(240, 240, 240);
             doc.rect(20, y, 170, 8, 'F');
             doc.setFont('helvetica', 'bold');
             doc.text('Quarter', 25, y + 6);
-            doc.text('Due Date', 70, y + 6);
-            doc.text('Amount', 160, y + 6);
+            doc.text('Period', 60, y + 6);
+            doc.text('Due Date', 110, y + 6);
+            doc.text('Amount', 170, y + 6, { align: 'right' });
             y += 10;
 
             doc.setFont('helvetica', 'normal');
@@ -1094,15 +1324,16 @@
                     doc.rect(20, y - 2, 170, 8, 'F');
                 }
                 doc.text(q.quarter, 25, y + 4);
-                doc.text(q.date, 70, y + 4);
-                doc.text(formatCurrency(r.quarterlyPayment), 160, y + 4);
+                doc.text(q.period, 60, y + 4);
+                doc.text(q.date, 110, y + 4);
+                doc.text(formatCurrency(r.quarterlyPayment), 170, y + 4, { align: 'right' });
                 y += 8;
             });
 
             y += 10;
 
             // Tax Breakdown
-            doc.setFontSize(14);
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
             doc.text('Tax Breakdown', 20, y);
             y += 8;
@@ -1115,9 +1346,7 @@
                 ['Self-Employment Tax', formatCurrency(r.selfEmploymentTax)],
                 ['Federal Income Tax', formatCurrency(r.federalIncomeTax)],
                 ['Child Tax Credit', `-${formatCurrency(r.childTaxCredit)}`],
-                ['Total Tax Liability', formatCurrency(r.totalTax)],
-                ['Less: Withholding & Payments', `-${formatCurrency(r.totalPaymentsMade)}`],
-                ['Remaining Tax Due', formatCurrency(r.remainingTaxDue)]
+                ['Total Tax Liability', formatCurrency(r.totalTax)]
             ];
 
             breakdownItems.forEach((item, i) => {
@@ -1126,27 +1355,21 @@
                     doc.rect(20, y - 2, 170, 8, 'F');
                 }
                 doc.text(item[0], 25, y + 4);
-                doc.text(item[1], 160, y + 4);
+                doc.text(item[1], 170, y + 4, { align: 'right' });
                 y += 8;
             });
 
-            // Effective Tax Rate
-            y += 5;
-            doc.text(`Effective Tax Rate: ${r.effectiveTaxRate.toFixed(1)}%`, 25, y);
-
             // Footer
-            y = 270;
             doc.setFontSize(8);
             doc.setTextColor(128, 128, 128);
-            doc.text('This report is for informational purposes only and does not constitute tax advice.', 105, y, { align: 'center' });
-            doc.text('Please consult a qualified tax professional for personalized guidance.', 105, y + 5, { align: 'center' });
+            doc.text('This report is for informational purposes only and does not constitute tax advice.', 105, 275, { align: 'center' });
+            doc.text('Please consult a qualified tax professional for personalized guidance.', 105, 280, { align: 'center' });
             
             if (clientConfig?.client) {
-                doc.text(`Generated by ${clientConfig.client}`, 105, y + 12, { align: 'center' });
+                doc.text(`Generated by ${clientConfig.client} | ${new Date().toLocaleDateString()}`, 105, 287, { align: 'center' });
             }
 
-            // Save
-            doc.save(`Quarterly-Tax-Estimate-${TAX_YEAR}.pdf`);
+            doc.save(`Quarterly-Tax-Report-${TAX_YEAR}.pdf`);
         }
 
         function hexToRgb(hex) {
@@ -1168,6 +1391,14 @@
             } else {
                 itemizedSection.classList.add('hidden');
             }
+        });
+
+        // Close modals on backdrop click
+        document.getElementById('leadModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        document.getElementById('emailModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEmailModal();
         });
 
         // Initialize
