@@ -260,46 +260,6 @@
         </div>
     </div>
 
-    <!-- Email Results Modal -->
-    <div id="emailModal" class="modal-backdrop hidden">
-        <div class="modal-content">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-3xl">📧</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Email Your Results</h3>
-                <p class="text-gray-600 text-sm">We'll send your tax calculation summary and PDF report to your inbox.</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                    <input type="text" id="emailModalName" placeholder="John Smith"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="emailModalEmail" placeholder="john@example.com"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input type="tel" id="emailModalPhone" placeholder="(555) 123-4567"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                
-                <button onclick="submitLeadAndEmail()" id="emailModalSubmitBtn" 
-                    class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all">
-                    📧 Send to My Email
-                </button>
-                
-                <button onclick="closeEmailModal()" class="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div id="mainContent" class="hidden">
         <!-- Header -->
@@ -618,12 +578,9 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 no-print">
-                            <button onclick="handlePDFDownload()" class="bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-all flex items-center justify-center">
-                                <span class="mr-2">📥</span> Download PDF
-                            </button>
-                            <button onclick="handleEmailResults()" class="bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center">
-                                <span class="mr-2">📧</span> Email Results
+                        <div class="flex justify-center mb-6 no-print">
+                            <button onclick="handlePDFDownload()" class="bg-gray-800 text-white py-3 px-8 rounded-lg font-semibold hover:bg-gray-700 transition-all flex items-center justify-center">
+                                <span class="mr-2">📥</span> Download PDF Report
                             </button>
                         </div>
 
