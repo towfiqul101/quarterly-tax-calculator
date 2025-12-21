@@ -886,44 +886,56 @@
             if (clientConfig && clientConfig.webhook) {
                 const r = calculationResults;
                 
-                await fetch(clientConfig.webhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    mode: 'no-cors',
-                    body: JSON.stringify({
-                        // Contact info
-                        name: name,
-                        firstName: name.split(' ')[0],
-                        lastName: name.split(' ').slice(1).join(' '),
-                        email: email,
-                        phone: phone,
-                        
-                        // Source tracking
-                        source: 'Quarterly Tax Calculator',
-                        leadSource: source,
-                        calculatorType: 'quarterly_estimated_tax',
-                        
-                        // Tax calculation results
-                        quarterlyPayment: r.quarterlyPayment,
-                        totalTax: r.totalTax,
-                        remainingTaxDue: r.remainingTaxDue,
-                        grossIncome: r.grossIncome,
-                        selfEmploymentIncome: r.selfEmploymentIncome,
-                        selfEmploymentTax: r.selfEmploymentTax,
-                        federalIncomeTax: r.federalIncomeTax,
-                        effectiveTaxRate: r.effectiveTaxRate.toFixed(1) + '%',
-                        filingStatus: r.filingStatus,
-                        numChildren: r.numChildren,
-                        
-                        // Safe harbor info
-                        meetsSafeHarbor: r.meetsSafeHarbor,
-                        priorYearTax: r.priorYearTax,
-                        
-                        // Metadata
-                        timestamp: new Date().toISOString(),
-                        taxYear: TAX_YEAR
-                    })
-                });
+                const webhookData = {
+                    // Contact info
+                    name: name,
+                    firstName: name.split(' ')[0],
+                    lastName: name.split(' ').slice(1).join(' '),
+                    email: email,
+                    phone: phone,
+                    
+                    // Source tracking
+                    source: 'Quarterly Tax Calculator',
+                    leadSource: source,
+                    calculatorType: 'quarterly_estimated_tax',
+                    
+                    // Tax calculation results
+                    quarterlyPayment: r.quarterlyPayment,
+                    totalTax: r.totalTax,
+                    remainingTaxDue: r.remainingTaxDue,
+                    grossIncome: r.grossIncome,
+                    selfEmploymentIncome: r.selfEmploymentIncome,
+                    selfEmploymentTax: r.selfEmploymentTax,
+                    federalIncomeTax: r.federalIncomeTax,
+                    effectiveTaxRate: r.effectiveTaxRate.toFixed(1) + '%',
+                    filingStatus: r.filingStatus,
+                    numChildren: r.numChildren,
+                    
+                    // Safe harbor info
+                    meetsSafeHarbor: r.meetsSafeHarbor,
+                    priorYearTax: r.priorYearTax,
+                    
+                    // Metadata
+                    timestamp: new Date().toISOString(),
+                    taxYear: TAX_YEAR
+                };
+
+                try {
+                    // Send via server-side API to avoid CORS issues
+                    const response = await fetch('/api/webhook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            webhookUrl: clientConfig.webhook,
+                            data: webhookData
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    console.log('Webhook result:', result);
+                } catch (error) {
+                    console.error('Webhook error:', error);
+                }
             }
         }
 
