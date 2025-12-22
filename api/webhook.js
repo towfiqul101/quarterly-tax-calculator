@@ -1,7 +1,5 @@
-// Webhook forwarding API - Sends data to GHL from server (no CORS issues)
-
+// Webhook API - Sends data to GHL (avoids CORS)
 export default async function handler(req, res) {
-    // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -24,21 +22,16 @@ export default async function handler(req, res) {
             });
         }
 
-        // Send to GHL webhook from server
         const response = await fetch(webhookUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-
-        const responseText = await response.text();
 
         return res.status(200).json({ 
             success: true, 
             status: response.status,
-            message: 'Webhook sent successfully'
+            message: 'Webhook sent'
         });
 
     } catch (error) {
