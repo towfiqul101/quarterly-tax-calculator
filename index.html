@@ -3,1120 +3,1323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quarterly Estimated Tax Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Tax Refund Estimator 2025</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * { font-family: 'Inter', sans-serif; }
-        
         :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
+            /* Header Colors */
+            --header-bg-color: #1a1a1a;
+            --header-title-color: #667eea;
+            --header-subtitle-color: #ffffff;
+            
+            /* Section Titles */
+            --section-title-color: #667eea;
+            
+            /* Form Elements */
+            --label-text-color: #374151;
+            --input-bg-color: #ffffff;
+            --input-text-color: #374151;
+            --input-border-color: #e5e7eb;
+            --input-focus-border-color: #667eea;
+            --placeholder-text-color: #9ca3af;
+            
+            /* Buttons */
+            --estimate-button-bg: #667eea;
+            --estimate-button-text: #ffffff;
+            --reset-button-bg: #ffffff;
+            --reset-button-text: #667eea;
+            --reset-button-border: #667eea;
+            --download-button-bg: #ffffff;
+            --download-button-text: #667eea;
+            --download-button-border: #667eea;
+            
+            /* Radio Buttons */
+            --radio-bg-color: #ffffff;
+            --radio-border-color: #e5e7eb;
+            --radio-selected-border-color: #667eea;
+            --radio-selected-bg-color: rgba(102, 126, 234, 0.1);
+            --radio-text-color: #374151;
+            
+            /* Number Spinner */
+            --spinner-button-bg: #ffffff;
+            --spinner-button-text: #667eea;
+            --spinner-button-border: #667eea;
+            --spinner-value-text: #374151;
+            
+            /* Results Section */
+            --results-bg-color: #ffffff;
+            --results-card-bg: #f3f4f6;
+            --results-label-color: #6b7280;
+            --results-value-color: #374151;
+            
+            /* Refund Display */
+            --refund-positive-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --refund-negative-bg: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --refund-text-color: #ffffff;
+            
+            /* CTA Box */
+            --cta-box-bg: #1a1a1a;
+            --cta-title-color: #ffd93d;
+            --cta-description-color: #e5e7eb;
+            --cta-button-bg: #ffd93d;
+            --cta-button-text: #000000;
+            
+            /* Footer */
+            --footer-bg-color: #1a1a1a;
+            --footer-text-color: #e5e7eb;
+            --footer-highlight-color: #ffd93d;
+            
+            /* Page Background */
+            --page-bg-color: #f3f4f6;
+            --form-section-bg: #f3f4f6;
+            
+            /* Success Message */
+            --success-message-bg: #10b981;
+            --success-message-text: #ffffff;
+            
+            /* Helper for RGB calculations */
+            --primary-rgb: 102, 126, 234;
         }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
         }
         
-        .card-shadow {
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+        /* MOBILE SCROLL OPTIMIZATION */
+        html {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
         }
         
-        .input-field:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--page-bg-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* Smooth scrolling for iOS */
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
         }
         
-        .btn-primary {
-            background-color: var(--primary-color);
+        /* Custom thin scrollbar */
+        body::-webkit-scrollbar {
+            width: 6px;
         }
         
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
+        body::-webkit-scrollbar-track {
+            background: transparent;
         }
         
-        .step-indicator.active {
-            background-color: var(--primary-color);
-            color: white;
+        body::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
         
-        .step-indicator.completed {
-            background-color: #10b981;
-            color: white;
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
         }
         
-        .currency-input::before {
-            content: '$';
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            font-weight: 500;
+        /* Firefox thin scrollbar */
+        body {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
         }
         
-        .currency-input input { padding-left: 28px; }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
+        /* Prevent scroll lag on mobile */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .result-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
-        }
-        
-        .warning-box {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .success-box {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left: 4px solid #10b981;
-        }
-        
-        .gate-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-        }
-        
-        #loadingScreen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .loader {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
+        .license-error { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; }
+        .license-error h1 { font-size: 48px; margin-bottom: 20px; color: #ef4444; }
+        .license-error p { font-size: 16px; margin-bottom: 10px; max-width: 600px; text-align: center; }
+        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        #errorScreen {
+        .container { 
+            max-width: 1200px; 
+            margin: 10px auto; 
+            background: var(--results-bg-color); 
+            border-radius: 16px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            overflow: hidden; 
             display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #fee2e2;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            /* Mobile scroll optimization */
+            will-change: transform;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
         
-        .modal-backdrop {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+        .header { 
+            background: var(--header-bg-color); 
+            color: var(--header-title-color); 
+            padding: 25px 20px; 
+            text-align: center; 
+        }
+        .header h1 { 
+            font-size: 24px; 
+            margin-bottom: 6px; 
+            color: var(--header-title-color); 
+        }
+        .header p { 
+            color: var(--header-subtitle-color); 
+            font-size: 14px; 
         }
         
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 450px;
-            width: 90%;
-            animation: modalIn 0.3s ease;
+        .main-content { display: grid; grid-template-columns: 1fr; gap: 0; }
+        .form-section { 
+            padding: 25px 20px; 
+            background: var(--form-section-bg); 
+        }
+        .results-section { 
+            padding: 25px 20px; 
+            background: var(--results-bg-color); 
         }
         
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+        .step { margin-bottom: 24px; }
+        .step-title { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: var(--section-title-color); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 12px; 
         }
         
-        .tooltip {
-            position: relative;
-            cursor: help;
+        .form-group { margin-bottom: 16px; }
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            color: var(--label-text-color); 
+            font-size: 14px; 
         }
         
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 10;
-            margin-bottom: 5px;
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid var(--input-border-color); 
+            border-radius: 8px; 
+            font-size: 15px; 
+            transition: all 0.3s; 
+            background: var(--input-bg-color); 
+            color: var(--input-text-color); 
         }
         
-        .payment-schedule-row:nth-child(odd) { background-color: #f9fafb; }
+        input::placeholder {
+            color: var(--placeholder-text-color);
+        }
+        
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--input-focus-border-color); 
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); 
+        }
+        
+        input.error { border-color: #ef4444; }
+        .error-message { color: #ef4444; font-size: 13px; margin-top: 4px; display: none; }
+        
+        .success-message { 
+            background: var(--success-message-bg); 
+            color: var(--success-message-text); 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 16px; 
+            display: none; 
+            font-size: 14px; 
+        }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 8px; }
+        .radio-option { 
+            display: flex; 
+            align-items: center; 
+            padding: 12px; 
+            border: 2px solid var(--radio-border-color); 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            font-size: 14px; 
+            background: var(--radio-bg-color);
+            color: var(--radio-text-color);
+        }
+        .radio-option:hover { 
+            border-color: var(--radio-selected-border-color); 
+            background: var(--radio-selected-bg-color); 
+        }
+        .radio-option input[type="radio"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .radio-option.selected { 
+            border-color: var(--radio-selected-border-color); 
+            background: var(--radio-selected-bg-color); 
+        }
+        
+        .number-spinner { display: flex; align-items: center; gap: 12px; }
+        .spinner-btn { 
+            width: 40px; 
+            height: 40px; 
+            border: 2px solid var(--spinner-button-border); 
+            background: var(--spinner-button-bg); 
+            border-radius: 8px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            color: var(--spinner-button-text); 
+            transition: all 0.3s; 
+        }
+        .spinner-btn:hover { 
+            background: var(--spinner-button-border); 
+            color: white; 
+        }
+        .spinner-value { 
+            font-size: 18px; 
+            font-weight: 600; 
+            min-width: 30px; 
+            text-align: center; 
+            color: var(--spinner-value-text); 
+        }
+        
+        .button-group { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+        .btn { 
+            padding: 14px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            width: 100%; 
+        }
+        
+        .btn-primary { 
+            background: var(--estimate-button-bg); 
+            color: var(--estimate-button-text); 
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3); 
+        }
+        .btn-primary:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+            transform: none; 
+        }
+        
+        .btn-secondary { 
+            background: var(--reset-button-bg); 
+            color: var(--reset-button-text); 
+            border: 2px solid var(--reset-button-border); 
+        }
+        .btn-secondary:hover { 
+            background: rgba(var(--primary-rgb), 0.05); 
+        }
+        
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .result-card { 
+            background: var(--results-card-bg); 
+            padding: 14px; 
+            border-radius: 8px; 
+            border: 1px solid #e5e7eb; 
+        }
+        .result-label { 
+            font-size: 11px; 
+            color: var(--results-label-color); 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 4px; 
+        }
+        .result-value { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: var(--results-value-color); 
+        }
+        
+        .refund-display { 
+            background: var(--refund-positive-bg); 
+            color: var(--refund-text-color); 
+            padding: 24px; 
+            border-radius: 12px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        .refund-display.owe { 
+            background: var(--refund-negative-bg); 
+        }
+        .refund-label { 
+            font-size: 13px; 
+            opacity: 0.9; 
+            margin-bottom: 8px; 
+        }
+        .refund-amount { 
+            font-size: 36px; 
+            font-weight: 700; 
+        }
+        
+        .breakdown { margin-top: 20px; }
+        .breakdown-item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 10px 0; 
+            border-bottom: 1px solid #e5e7eb; 
+            font-size: 14px; 
+        }
+        .breakdown-label { 
+            color: var(--results-label-color); 
+        }
+        .breakdown-value { 
+            font-weight: 600; 
+            color: var(--results-value-color); 
+        }
+        
+        .cta-box { 
+            background: var(--cta-box-bg); 
+            padding: 20px; 
+            border-radius: 8px; 
+            text-align: center; 
+            margin-top: 20px; 
+        }
+        .cta-box h3 { 
+            margin-bottom: 6px; 
+            font-size: 17px; 
+            color: var(--cta-title-color); 
+        }
+        .cta-box p { 
+            color: var(--cta-description-color); 
+            font-size: 13px; 
+            margin-bottom: 14px; 
+        }
+        .cta-btn { 
+            display: inline-block; 
+            background: var(--cta-button-bg); 
+            color: var(--cta-button-text); 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            font-size: 14px; 
+        }
+        .cta-btn:hover { 
+            transform: translateY(-2px); 
+            opacity: 0.9; 
+        }
+        
+        .footer { 
+            background: var(--footer-bg-color); 
+            color: var(--footer-text-color); 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 13px; 
+        }
+        .footer-highlight { 
+            color: var(--footer-highlight-color); 
+            font-weight: 600; 
+        }
+        
+        .placeholder { 
+            text-align: center; 
+            color: var(--placeholder-text-color); 
+            padding: 30px 20px; 
+            font-size: 14px; 
+        }
+        .required { color: #ef4444; }
+        
+        @media (min-width: 768px) {
+            .container { margin: 20px auto; }
+            .header h1 { font-size: 28px; }
+            .header p { font-size: 15px; }
+            .form-section, .results-section { padding: 30px; }
+            .button-group { flex-direction: row; }
+            .btn { flex: 1; }
+        }
+        
+        /* ==========================================
+           iOS/iPhone CRITICAL SCROLL FIXES
+           ========================================== */
+        
+        /* Enable iOS momentum scrolling globally */
+        html {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Mobile/Tablet optimizations - iOS focused */
+        @media (max-width: 967px) {
+            /* CRITICAL: Force block layout - NO GRID (causes iOS sticking) */
+            .main-content {
+                display: block !important;
+                grid-template-columns: none !important;
+                gap: 0 !important;
+            }
+            
+            /* Remove ALL transforms on mobile - main iOS sticking cause */
+            * {
+                transform: none !important;
+                -webkit-transform: none !important;
+                will-change: auto !important;
+            }
+            
+            /* Faster transitions for mobile */
+            * {
+                transition-duration: 0.1s !important;
+            }
+            
+            /* Simplify container for better iOS performance */
+            .container {
+                border-radius: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+            
+            /* Remove borders between sections */
+            .form-section {
+                border-right: none !important;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            /* Disable hover effects on mobile (prevent repaint) */
+            .radio-option:hover,
+            .btn-primary:hover,
+            .btn-secondary:hover,
+            .spinner-btn:hover,
+            .cta-btn:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            
+            /* Force iOS momentum scroll */
+            html, body {
+                -webkit-overflow-scrolling: touch !important;
+                overflow-y: scroll;
+            }
+            
+            /* Simplify rounded corners on mobile */
+            .radio-option,
+            .btn,
+            input,
+            select {
+                border-radius: 6px !important;
+            }
+        }
+        
+        /* iOS Safari specific targeting */
+        @supports (-webkit-touch-callout: none) {
+            /* This applies ONLY to iOS Safari */
+            body {
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            * {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
+        @media (min-width: 968px) {
+            .main-content { grid-template-columns: 1fr 1fr; }
+            .form-section { border-right: 1px solid #e5e7eb; }
+            .header h1 { font-size: 32px; }
+            .form-section, .results-section { padding: 40px; }
+            .results-grid { gap: 16px; }
+            .result-value { font-size: 24px; }
+            .refund-amount { font-size: 48px; }
+            .refund-display { padding: 32px; }
+        }
+        
+        #__vercel_toolbar, #__vercel_banner, [id*="vercel-toolbar"], [class*="vercel-toolbar"], 
+        [id^="vercel"], [class^="vercel"], iframe[src*="vercel.live"], iframe[src*="_vercel"],
+        div[class*="Toolbar"], div[id*="toolbar"] {
+            display: none !important; visibility: hidden !important; opacity: 0 !important;
+            height: 0 !important; width: 0 !important; position: absolute !important;
+            pointer-events: none !important; z-index: -9999 !important;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <div class="text-center">
-            <div class="loader mx-auto mb-4"></div>
-            <p class="text-white text-lg">Loading Calculator...</p>
-        </div>
-    </div>
-
-    <!-- Error Screen -->
-    <div id="errorScreen">
-        <div class="text-center p-8">
-            <div class="text-6xl mb-4">⚠️</div>
-            <h1 class="text-2xl font-bold text-red-800 mb-2">License Error</h1>
-            <p id="errorMessage" class="text-red-600">Unable to validate license.</p>
-        </div>
-    </div>
-
-    <!-- Lead Capture Modal -->
-    <div id="leadModal" class="modal-backdrop hidden">
-        <div class="modal-content">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-3xl">📄</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Get Your Free PDF Report</h3>
-                <p class="text-gray-600 text-sm">Enter your details to download your personalized quarterly tax report.</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                    <input type="text" id="modalName" placeholder="John Smith"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
-                    <input type="email" id="modalEmail" placeholder="john@example.com"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input type="tel" id="modalPhone" placeholder="(555) 123-4567"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                </div>
-                
-                <button onclick="submitLeadAndDownload()" id="modalSubmitBtn" 
-                    class="w-full btn-primary text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                    📥 Download My PDF Report
-                </button>
-                
-                <button onclick="closeModal()" class="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
-                    Maybe later
-                </button>
-            </div>
-            
-            <p class="text-xs text-gray-400 text-center mt-4">
-                🔒 Your information is secure and will never be shared.
-            </p>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div id="mainContent" class="hidden">
-        <!-- Header -->
-        <header class="gradient-bg py-6 px-4">
-            <div class="max-w-3xl mx-auto text-center">
-                <img id="clientLogo" src="" alt="Logo" class="h-12 mx-auto mb-4 hidden">
-                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Quarterly Estimated Tax Calculator</h1>
-                <p class="text-indigo-100">Calculate your quarterly tax payments and avoid IRS penalties</p>
-            </div>
-        </header>
-
-        <!-- Calculator Container -->
-        <main class="max-w-3xl mx-auto px-4 py-8">
-            <!-- Progress Steps -->
-            <div class="flex justify-between mb-8" id="progressSteps">
-                <div class="flex flex-col items-center">
-                    <div class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-semibold mb-2 bg-gray-200 text-gray-500" data-step="1">1</div>
-                    <span class="text-xs text-gray-600 hidden md:block">Income</span>
-                </div>
-                <div class="flex-1 h-0.5 bg-gray-200 self-center mx-2 mt-[-20px]"></div>
-                <div class="flex flex-col items-center">
-                    <div class="step-indicator w-10 h-10 rounded-full flex items-center justify-center font-semibold bg-gray-200 text-gray-500 mb-2" data-step="2">2</div>
-                    <span class="text-xs text-gray-600 hidden md:block">Deductions</span>
-                </div>
-                <div class="flex-1 h-0.5 bg-gray-200 self-center mx-2 mt-[-20px]"></div>
-                <div class="flex flex-col items-center">
-                    <div class="step-indicator w-10 h-10 rounded-full flex items-center justify-center font-semibold bg-gray-200 text-gray-500 mb-2" data-step="3">3</div>
-                    <span class="text-xs text-gray-600 hidden md:block">Filing Info</span>
-                </div>
-                <div class="flex-1 h-0.5 bg-gray-200 self-center mx-2 mt-[-20px]"></div>
-                <div class="flex flex-col items-center">
-                    <div class="step-indicator w-10 h-10 rounded-full flex items-center justify-center font-semibold bg-gray-200 text-gray-500 mb-2" data-step="4">4</div>
-                    <span class="text-xs text-gray-600 hidden md:block">Results</span>
-                </div>
-            </div>
-
-            <!-- Calculator Card -->
-            <div class="bg-white rounded-2xl card-shadow p-6 md:p-8">
-                <!-- Step 1: Income -->
-                <div id="step1" class="step-content fade-in">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 1: Income Information</h2>
-                    <p class="text-gray-600 mb-6">Enter your expected annual income for tax year 2025.</p>
-                    
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                W-2 Wages (if any)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Income from traditional employment">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="w2Wages" value="0" min="0" 
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Self-Employment / Business Income
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="1099 income, freelance, consulting">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="selfEmploymentIncome" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Other Income
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Investments, rental, dividends">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="otherIncome" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 flex justify-end">
-                        <button onclick="nextStep(2)" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                            Next: Deductions →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 2: Deductions -->
-                <div id="step2" class="step-content hidden">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 2: Deductions & Expenses</h2>
-                    <p class="text-gray-600 mb-6">Enter your business expenses and deductions.</p>
-                    
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Total Business Expenses
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Office, software, travel, marketing">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="businessExpenses" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Retirement Contributions
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="SEP-IRA, Solo 401k, Traditional IRA">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="retirementContributions" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Health Insurance Premiums
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Self-employed health insurance">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="healthInsurance" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Deduction Type</label>
-                            <select id="deductionType" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                                <option value="standard">Standard Deduction (Recommended)</option>
-                                <option value="itemized">Itemized Deductions</option>
-                            </select>
-                        </div>
-                        
-                        <div id="itemizedSection" class="hidden">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Itemized Deductions</label>
-                            <div class="currency-input relative">
-                                <input type="number" id="itemizedDeductions" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 flex justify-between">
-                        <button onclick="prevStep(1)" class="text-gray-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all">
-                            ← Back
-                        </button>
-                        <button onclick="nextStep(3)" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                            Next: Filing Info →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 3: Filing Info -->
-                <div id="step3" class="step-content hidden">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">Step 3: Filing Information</h2>
-                    <p class="text-gray-600 mb-6">Tell us about your filing status and withholdings.</p>
-                    
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Filing Status</label>
-                            <select id="filingStatus" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                                <option value="single">Single</option>
-                                <option value="married_jointly">Married Filing Jointly</option>
-                                <option value="married_separately">Married Filing Separately</option>
-                                <option value="head_household">Head of Household</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Qualifying Children (under 17)
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="$2,000 credit per child">ⓘ</span>
-                            </label>
-                            <input type="number" id="numChildren" value="0" min="0" max="10"
-                                class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                W-2 Federal Tax Withheld
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="YTD federal withholding from pay stub">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="w2Withholding" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Estimated Payments Already Made
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Quarterly payments sent to IRS">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="estimatedPaymentsMade" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Last Year's Total Tax
-                                <span class="tooltip text-gray-400 ml-1" data-tooltip="Line 24 from 2024 Form 1040">ⓘ</span>
-                            </label>
-                            <div class="currency-input relative">
-                                <input type="number" id="priorYearTax" value="0" min="0"
-                                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 flex justify-between">
-                        <button onclick="prevStep(2)" class="text-gray-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all">
-                            ← Back
-                        </button>
-                        <button onclick="calculateTax()" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                            Calculate My Taxes →
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 4: Results -->
-                <div id="step4" class="step-content hidden">
-                    <div class="fade-in">
-                        <!-- Main Result -->
-                        <div class="result-card rounded-xl p-6 md:p-8 text-white text-center mb-6">
-                            <p class="text-indigo-100 mb-2">Your Quarterly Estimated Payment</p>
-                            <h2 class="text-4xl md:text-5xl font-bold mb-2" id="quarterlyAmount">$0</h2>
-                            <p class="text-indigo-200">Due each quarter to avoid IRS penalties</p>
-                        </div>
-
-                        <!-- Annual Summary -->
-                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-gray-800 mb-4">📊 Annual Tax Summary</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                                <div class="bg-white p-4 rounded-lg">
-                                    <p class="text-gray-500 text-xs mb-1">Total Tax</p>
-                                    <p class="font-bold text-lg" id="summaryTotalTax">$0</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg">
-                                    <p class="text-gray-500 text-xs mb-1">Already Paid</p>
-                                    <p class="font-bold text-lg text-emerald-600" id="summaryPaid">$0</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg">
-                                    <p class="text-gray-500 text-xs mb-1">Still Owe</p>
-                                    <p class="font-bold text-lg text-red-600" id="summaryOwed">$0</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-lg">
-                                    <p class="text-gray-500 text-xs mb-1">Tax Rate</p>
-                                    <p class="font-bold text-lg" id="summaryRate">0%</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Schedule -->
-                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                            <h3 class="font-bold text-gray-800 mb-4">📅 2025 Payment Schedule</h3>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm">
-                                    <thead>
-                                        <tr class="text-left text-gray-500 border-b">
-                                            <th class="pb-3 font-medium">Quarter</th>
-                                            <th class="pb-3 font-medium">Period</th>
-                                            <th class="pb-3 font-medium">Due Date</th>
-                                            <th class="pb-3 font-medium text-right">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="paymentSchedule"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Safe Harbor -->
-                        <div id="safeHarborBox" class="p-4 rounded-lg mb-6"></div>
-
-                        <!-- Gated: Detailed Breakdown -->
-                        <div class="relative mb-6">
-                            <div id="detailedBreakdown" class="bg-gray-50 rounded-xl p-6">
-                                <h3 class="font-bold text-gray-800 mb-4">📋 Detailed Tax Breakdown</h3>
-                                <div class="space-y-3" id="taxBreakdown"></div>
-                            </div>
-                            <div id="breakdownGate" class="gate-overlay rounded-xl">
-                                <div class="text-center p-6">
-                                    <div class="text-4xl mb-3">🔒</div>
-                                    <h4 class="font-bold text-gray-800 mb-2">Unlock Full Tax Breakdown</h4>
-                                    <p class="text-gray-600 text-sm mb-4">Enter your email to see details and download PDF.</p>
-                                    <button onclick="openModal()" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
-                                        Unlock Now - Free
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Gated: Tax Tips -->
-                        <div class="relative mb-6">
-                            <div id="taxTipsSection" class="bg-emerald-50 rounded-xl p-6">
-                                <h3 class="font-bold text-emerald-800 mb-4">💡 Tax Saving Tips</h3>
-                                <div id="taxTips" class="space-y-3 text-emerald-700"></div>
-                            </div>
-                            <div id="tipsGate" class="gate-overlay rounded-xl">
-                                <div class="text-center p-6">
-                                    <div class="text-4xl mb-3">💡</div>
-                                    <h4 class="font-bold text-gray-800 mb-2">Get Personalized Tax Tips</h4>
-                                    <p class="text-gray-600 text-sm mb-4">See how you could save money on taxes.</p>
-                                    <button onclick="openModal()" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-700">
-                                        Show My Tips - Free
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Download Button -->
-                        <div class="flex justify-center mb-6">
-                            <button onclick="handlePDFDownload()" class="bg-gray-800 text-white py-3 px-8 rounded-lg font-semibold hover:bg-gray-700 transition-all flex items-center justify-center">
-                                <span class="mr-2">📥</span> Download PDF Report
-                            </button>
-                        </div>
-
-                        <!-- CTA -->
-                        <div>
-                            <a href="#" id="ctaButton" class="block w-full btn-primary text-white py-4 rounded-lg font-semibold text-center hover:shadow-lg transition-all text-lg">
-                                📞 Schedule a Free Tax Consultation
-                            </a>
-                            <p class="text-center text-gray-500 text-sm mt-2">Get expert help with your quarterly tax payments</p>
-                        </div>
-
-                        <!-- Start Over -->
-                        <div class="mt-6 text-center">
-                            <button onclick="startOver()" class="text-indigo-600 font-medium hover:underline">
-                                ↩️ Start Over with New Numbers
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="mt-8 text-center text-gray-500 text-sm">
-                <p>✓ Free to use ✓ No signup required ✓ IRS-compliant calculations</p>
-                <p class="mt-2">This calculator provides estimates only. Consult a tax professional for advice.</p>
-            </div>
-            <footer class="mt-8 text-center">
-                <p class="text-gray-400 text-sm">Powered by <span id="clientName" class="font-medium">Your Tax Professional</span></p>
-            </footer>
-        </main>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+        <p>Validating license...</p>
     </div>
 
     <script>
-        // ============================================
-        // STATE & CONFIG
-        // ============================================
-        let clientConfig = null;
-        let calculationResults = null;
-        let currentStep = 1;
-        let leadCaptured = false;
-
-        const TAX_YEAR = 2025;
+    const SecureLicense = {
+        config: null,
+        apiUrl: window.location.origin + '/api/validate',
         
-        const STANDARD_DEDUCTIONS = {
-            single: 15000,
-            married_jointly: 30000,
-            married_separately: 15000,
-            head_household: 22500
-        };
-
-        const TAX_BRACKETS = {
-            single: [
-                { min: 0, max: 11925, rate: 0.10 },
-                { min: 11925, max: 48475, rate: 0.12 },
-                { min: 48475, max: 103350, rate: 0.22 },
-                { min: 103350, max: 197300, rate: 0.24 },
-                { min: 197300, max: 250525, rate: 0.32 },
-                { min: 250525, max: 626350, rate: 0.35 },
-                { min: 626350, max: Infinity, rate: 0.37 }
-            ],
-            married_jointly: [
-                { min: 0, max: 23850, rate: 0.10 },
-                { min: 23850, max: 96950, rate: 0.12 },
-                { min: 96950, max: 206700, rate: 0.22 },
-                { min: 206700, max: 394600, rate: 0.24 },
-                { min: 394600, max: 501050, rate: 0.32 },
-                { min: 501050, max: 751600, rate: 0.35 },
-                { min: 751600, max: Infinity, rate: 0.37 }
-            ],
-            married_separately: [
-                { min: 0, max: 11925, rate: 0.10 },
-                { min: 11925, max: 48475, rate: 0.12 },
-                { min: 48475, max: 103350, rate: 0.22 },
-                { min: 103350, max: 197300, rate: 0.24 },
-                { min: 197300, max: 250525, rate: 0.32 },
-                { min: 250525, max: 375800, rate: 0.35 },
-                { min: 375800, max: Infinity, rate: 0.37 }
-            ],
-            head_household: [
-                { min: 0, max: 17000, rate: 0.10 },
-                { min: 17000, max: 64850, rate: 0.12 },
-                { min: 64850, max: 103350, rate: 0.22 },
-                { min: 103350, max: 197300, rate: 0.24 },
-                { min: 197300, max: 250500, rate: 0.32 },
-                { min: 250500, max: 626350, rate: 0.35 },
-                { min: 626350, max: Infinity, rate: 0.37 }
-            ]
-        };
-
-        const QUARTERLY_DUE_DATES = [
-            { quarter: 'Q1', date: 'April 15, 2025', period: 'Jan 1 - Mar 31' },
-            { quarter: 'Q2', date: 'June 16, 2025', period: 'Apr 1 - May 31' },
-            { quarter: 'Q3', date: 'Sept 15, 2025', period: 'Jun 1 - Aug 31' },
-            { quarter: 'Q4', date: 'Jan 15, 2026', period: 'Sep 1 - Dec 31' }
-        ];
-
-        // ============================================
-        // LICENSE VALIDATION
-        // ============================================
-        async function validateLicense() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const licenseKey = urlParams.get('key');
-
-            if (!licenseKey) {
-                showError('MISSING_KEY', 'No license key provided.');
-                return;
+        async validate() {
+            const params = new URLSearchParams(window.location.search);
+            const key = params.get('key');
+            
+            if (!key) {
+                this.showError('MISSING_KEY', 'No license key provided.');
+                return false;
             }
-
+            
             try {
-                const response = await fetch(`/api/validate?key=${encodeURIComponent(licenseKey)}`);
-                const data = await response.json();
-
-                if (!data.valid) {
-                    showError(data.error, data.message);
-                    return;
-                }
-
-                clientConfig = data.config;
-                applyBranding();
-                showCalculator();
-            } catch (error) {
-                console.error('License error:', error);
-                showError('NETWORK_ERROR', 'Unable to validate license.');
-            }
-        }
-
-        function showError(code, message) {
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('errorScreen').style.display = 'flex';
-            document.getElementById('errorMessage').textContent = message || `Error: ${code}`;
-        }
-
-        function showCalculator() {
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContent').classList.remove('hidden');
-        }
-
-        // ============================================
-        // BRANDING
-        // ============================================
-        function applyBranding() {
-            if (!clientConfig) return;
-
-            if (clientConfig.primaryColor) {
-                document.documentElement.style.setProperty('--primary-color', clientConfig.primaryColor);
-                document.documentElement.style.setProperty('--primary-hover', adjustColor(clientConfig.primaryColor, -20));
-            }
-
-            if (clientConfig.logo) {
-                const logoEl = document.getElementById('clientLogo');
-                logoEl.src = clientConfig.logo;
-                logoEl.classList.remove('hidden');
-            }
-
-            if (clientConfig.client) {
-                document.getElementById('clientName').textContent = clientConfig.client;
-            }
-
-            if (clientConfig.ctaUrl) {
-                document.getElementById('ctaButton').href = clientConfig.ctaUrl;
-            }
-            if (clientConfig.ctaText) {
-                document.getElementById('ctaButton').innerHTML = clientConfig.ctaText;
-            }
-        }
-
-        function adjustColor(color, amount) {
-            const hex = color.replace('#', '');
-            const num = parseInt(hex, 16);
-            const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-            const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
-            const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
-            return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
-        }
-
-        // ============================================
-        // MODAL
-        // ============================================
-        function openModal() {
-            document.getElementById('leadModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('leadModal').classList.add('hidden');
-        }
-
-        // ============================================
-        // LEAD CAPTURE & WEBHOOK
-        // ============================================
-        async function submitLeadAndDownload() {
-            const name = document.getElementById('modalName').value.trim();
-            const email = document.getElementById('modalEmail').value.trim();
-            const phone = document.getElementById('modalPhone').value.trim();
-
-            if (!name || !email) {
-                alert('Please enter your name and email.');
-                return;
-            }
-
-            const btn = document.getElementById('modalSubmitBtn');
-            btn.textContent = 'Processing...';
-            btn.disabled = true;
-
-            try {
-                await sendToWebhook(name, email, phone);
-                leadCaptured = true;
-                unlockGatedContent();
-                closeModal();
-                downloadPDF();
-            } catch (error) {
-                console.error('Error:', error);
-            }
-
-            btn.textContent = '📥 Download My PDF Report';
-            btn.disabled = false;
-        }
-
-        async function sendToWebhook(name, email, phone) {
-            if (clientConfig && clientConfig.webhook) {
-                const r = calculationResults;
+                const response = await fetch(this.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: key,
+                        domain: window.location.hostname
+                    })
+                });
                 
-                const webhookData = {
-                    name: name,
-                    firstName: name.split(' ')[0],
-                    lastName: name.split(' ').slice(1).join(' '),
-                    email: email,
-                    phone: phone,
-                    source: 'Quarterly Tax Calculator',
-                    quarterlyPayment: r.quarterlyPayment,
-                    totalTax: r.totalTax,
-                    remainingTaxDue: r.remainingTaxDue,
-                    grossIncome: r.grossIncome,
-                    selfEmploymentIncome: r.selfEmploymentIncome,
-                    selfEmploymentTax: r.selfEmploymentTax,
-                    federalIncomeTax: r.federalIncomeTax,
-                    effectiveTaxRate: r.effectiveTaxRate.toFixed(1) + '%',
-                    filingStatus: r.filingStatus,
-                    numChildren: r.numChildren,
-                    meetsSafeHarbor: r.meetsSafeHarbor,
-                    timestamp: new Date().toISOString(),
-                    taxYear: TAX_YEAR
+                const data = await response.json();
+                
+                if (!data.valid) {
+                    this.showError(data.error, data.message);
+                    return false;
+                }
+                
+                this.config = {
+                    key: key,
+                    webhook: data.webhook,
+                    client: data.client,
+                    branding: data.branding
                 };
-
-                try {
-                    const response = await fetch('/api/webhook', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            webhookUrl: clientConfig.webhook,
-                            data: webhookData
-                        })
-                    });
-                    const result = await response.json();
-                    console.log('Webhook result:', result);
-                } catch (error) {
-                    console.error('Webhook error:', error);
+                
+                this.applyBranding(data.branding);
+                this.applyText(data.branding);
+                
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('calculatorApp').style.display = 'block';
+                
+                console.log('%c✓ License Valid', 'color: #10b981; font-size: 14px; font-weight: bold;');
+                console.log('%cClient:', data.client, 'color: ' + (data.branding?.headerTitleColor || '#667eea') + '; font-size: 12px;');
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Validation error:', error);
+                this.showError('VALIDATION_FAILED', 
+                    'Could not validate license. Please check your internet connection and try again.');
+                return false;
+            }
+        },
+        
+        applyBranding(branding) {
+            if (!branding) return;
+            
+            const root = document.documentElement;
+            
+            // Map descriptive names to CSS variables
+            const colorMap = {
+                // Header
+                'headerBgColor': '--header-bg-color',
+                'headerTitleColor': '--header-title-color',
+                'headerSubtitleColor': '--header-subtitle-color',
+                
+                // Section Titles
+                'sectionTitleColor': '--section-title-color',
+                
+                // Form Elements
+                'labelTextColor': '--label-text-color',
+                'inputBgColor': '--input-bg-color',
+                'inputTextColor': '--input-text-color',
+                'inputBorderColor': '--input-border-color',
+                'inputFocusBorderColor': '--input-focus-border-color',
+                'placeholderTextColor': '--placeholder-text-color',
+                
+                // Buttons
+                'estimateButtonBg': '--estimate-button-bg',
+                'estimateButtonText': '--estimate-button-text',
+                'resetButtonBg': '--reset-button-bg',
+                'resetButtonText': '--reset-button-text',
+                'resetButtonBorder': '--reset-button-border',
+                'downloadButtonBg': '--download-button-bg',
+                'downloadButtonText': '--download-button-text',
+                'downloadButtonBorder': '--download-button-border',
+                
+                // Radio Buttons
+                'radioBgColor': '--radio-bg-color',
+                'radioBorderColor': '--radio-border-color',
+                'radioSelectedBorderColor': '--radio-selected-border-color',
+                'radioSelectedBgColor': '--radio-selected-bg-color',
+                'radioTextColor': '--radio-text-color',
+                
+                // Number Spinner
+                'spinnerButtonBg': '--spinner-button-bg',
+                'spinnerButtonText': '--spinner-button-text',
+                'spinnerButtonBorder': '--spinner-button-border',
+                'spinnerValueText': '--spinner-value-text',
+                
+                // Results
+                'resultsBgColor': '--results-bg-color',
+                'resultsCardBg': '--results-card-bg',
+                'resultsLabelColor': '--results-label-color',
+                'resultsValueColor': '--results-value-color',
+                
+                // Refund Display
+                'refundPositiveBg': '--refund-positive-bg',
+                'refundNegativeBg': '--refund-negative-bg',
+                'refundTextColor': '--refund-text-color',
+                
+                // CTA Box
+                'ctaBoxBg': '--cta-box-bg',
+                'ctaTitleColor': '--cta-title-color',
+                'ctaDescriptionColor': '--cta-description-color',
+                'ctaButtonBg': '--cta-button-bg',
+                'ctaButtonText': '--cta-button-text',
+                
+                // Footer
+                'footerBgColor': '--footer-bg-color',
+                'footerTextColor': '--footer-text-color',
+                'footerHighlightColor': '--footer-highlight-color',
+                
+                // Page
+                'pageBgColor': '--page-bg-color',
+                'formSectionBg': '--form-section-bg',
+                
+                // Success Message
+                'successMessageBg': '--success-message-bg',
+                'successMessageText': '--success-message-text'
+            };
+            
+            // Apply each branding color if it exists
+            Object.keys(colorMap).forEach(brandingKey => {
+                if (branding[brandingKey]) {
+                    root.style.setProperty(colorMap[brandingKey], branding[brandingKey]);
+                }
+            });
+            
+            // Calculate RGB for primary color (use estimateButtonBg as primary)
+            if (branding.estimateButtonBg) {
+                const rgb = this.hexToRgb(branding.estimateButtonBg);
+                if (rgb) {
+                    root.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
                 }
             }
-        }
-
-        function unlockGatedContent() {
-            document.getElementById('breakdownGate').style.display = 'none';
-            document.getElementById('tipsGate').style.display = 'none';
-        }
-
-        function handlePDFDownload() {
-            if (leadCaptured) {
-                downloadPDF();
-            } else {
-                openModal();
+        },
+        
+        applyText(branding) {
+            if (!branding) return;
+            
+            if (branding.headerTitle) {
+                document.getElementById('headerTitle').textContent = branding.headerTitle;
             }
-        }
-
-        // ============================================
-        // STEP NAVIGATION
-        // ============================================
-        function nextStep(step) {
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            document.getElementById(`step${step}`).classList.remove('hidden');
             
-            document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
-            document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.add('completed');
-            document.querySelector(`.step-indicator[data-step="${step}"]`).classList.add('active');
-            
-            currentStep = step;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function prevStep(step) {
-            document.getElementById(`step${currentStep}`).classList.add('hidden');
-            document.getElementById(`step${step}`).classList.remove('hidden');
-            
-            document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
-            document.querySelector(`.step-indicator[data-step="${step}"]`).classList.remove('completed');
-            document.querySelector(`.step-indicator[data-step="${step}"]`).classList.add('active');
-            
-            currentStep = step;
-        }
-
-        function startOver() {
-            currentStep = 1;
-            leadCaptured = false;
-            
-            document.querySelectorAll('.step-indicator').forEach((el, index) => {
-                el.classList.remove('active', 'completed');
-                if (index === 0) el.classList.add('active');
-            });
-            
-            document.querySelectorAll('.step-content').forEach((el, index) => {
-                if (index === 0) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-            
-            document.getElementById('breakdownGate').style.display = 'flex';
-            document.getElementById('tipsGate').style.display = 'flex';
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // ============================================
-        // TAX CALCULATIONS
-        // ============================================
-        function calculateTax() {
-            const w2Wages = parseFloat(document.getElementById('w2Wages').value) || 0;
-            const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
-            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
-            const businessExpenses = parseFloat(document.getElementById('businessExpenses').value) || 0;
-            const retirementContributions = parseFloat(document.getElementById('retirementContributions').value) || 0;
-            const healthInsurance = parseFloat(document.getElementById('healthInsurance').value) || 0;
-            const filingStatus = document.getElementById('filingStatus').value;
-            const numChildren = parseInt(document.getElementById('numChildren').value) || 0;
-            const w2Withholding = parseFloat(document.getElementById('w2Withholding').value) || 0;
-            const estimatedPaymentsMade = parseFloat(document.getElementById('estimatedPaymentsMade').value) || 0;
-            const priorYearTax = parseFloat(document.getElementById('priorYearTax').value) || 0;
-            const deductionType = document.getElementById('deductionType').value;
-            const itemizedDeductions = parseFloat(document.getElementById('itemizedDeductions').value) || 0;
-
-            const netSelfEmployment = Math.max(0, selfEmploymentIncome - businessExpenses);
-            const seTaxableIncome = netSelfEmployment * 0.9235;
-            const socialSecurityTax = Math.min(seTaxableIncome, 176100) * 0.124;
-            const medicareTax = seTaxableIncome * 0.029;
-            const additionalMedicare = Math.max(0, seTaxableIncome - 200000) * 0.009;
-            const selfEmploymentTax = socialSecurityTax + medicareTax + additionalMedicare;
-            const deductibleSETax = selfEmploymentTax / 2;
-
-            const grossIncome = w2Wages + netSelfEmployment + otherIncome;
-            const agi = grossIncome - deductibleSETax - retirementContributions - healthInsurance;
-
-            const standardDeduction = STANDARD_DEDUCTIONS[filingStatus];
-            const deduction = (deductionType === 'itemized' && itemizedDeductions > standardDeduction) 
-                ? itemizedDeductions : standardDeduction;
-
-            const taxableIncome = Math.max(0, agi - deduction);
-
-            const brackets = TAX_BRACKETS[filingStatus];
-            let federalIncomeTax = 0;
-            let remainingIncome = taxableIncome;
-
-            for (const bracket of brackets) {
-                if (remainingIncome <= 0) break;
-                const taxableAtBracket = Math.min(remainingIncome, bracket.max - bracket.min);
-                federalIncomeTax += taxableAtBracket * bracket.rate;
-                remainingIncome -= taxableAtBracket;
+            if (branding.headerSubtitle) {
+                document.getElementById('headerSubtitle').textContent = branding.headerSubtitle;
             }
-
-            const childTaxCredit = numChildren * 2000;
-            const appliedChildCredit = Math.min(childTaxCredit, federalIncomeTax);
-
-            const totalTax = Math.max(0, federalIncomeTax + selfEmploymentTax - appliedChildCredit);
-            const totalPaymentsMade = w2Withholding + estimatedPaymentsMade;
-            const remainingTaxDue = Math.max(0, totalTax - totalPaymentsMade);
-            const quarterlyPayment = remainingTaxDue / 4;
-
-            const safeHarbor90 = totalTax * 0.90;
-            const safeHarborHighIncome = agi > 150000 ? priorYearTax * 1.10 : priorYearTax;
-            const effectiveTaxRate = grossIncome > 0 ? (totalTax / grossIncome) * 100 : 0;
-
-            calculationResults = {
-                w2Wages, selfEmploymentIncome, otherIncome, businessExpenses,
-                netSelfEmployment, grossIncome, retirementContributions,
-                healthInsurance, deductibleSETax, deduction, agi, taxableIncome,
-                selfEmploymentTax, federalIncomeTax, childTaxCredit: appliedChildCredit,
-                totalTax, w2Withholding, estimatedPaymentsMade, totalPaymentsMade,
-                remainingTaxDue, quarterlyPayment, priorYearTax, safeHarbor90,
-                safeHarborHighIncome,
-                meetsSafeHarbor: totalPaymentsMade >= Math.min(safeHarbor90, safeHarborHighIncome || Infinity),
-                effectiveTaxRate, filingStatus, numChildren
-            };
-
-            displayResults();
-            nextStep(4);
-        }
-
-        // ============================================
-        // DISPLAY RESULTS
-        // ============================================
-        function displayResults() {
-            const r = calculationResults;
-
-            document.getElementById('quarterlyAmount').textContent = formatCurrency(r.quarterlyPayment);
-            document.getElementById('summaryTotalTax').textContent = formatCurrency(r.totalTax);
-            document.getElementById('summaryPaid').textContent = formatCurrency(r.totalPaymentsMade);
-            document.getElementById('summaryOwed').textContent = formatCurrency(r.remainingTaxDue);
-            document.getElementById('summaryRate').textContent = r.effectiveTaxRate.toFixed(1) + '%';
-
-            const scheduleHtml = QUARTERLY_DUE_DATES.map(q => `
-                <tr class="payment-schedule-row">
-                    <td class="py-3 font-semibold">${q.quarter}</td>
-                    <td class="py-3 text-gray-600">${q.period}</td>
-                    <td class="py-3">${q.date}</td>
-                    <td class="py-3 text-right font-bold">${formatCurrency(r.quarterlyPayment)}</td>
-                </tr>
-            `).join('');
-            document.getElementById('paymentSchedule').innerHTML = scheduleHtml;
-
-            const safeHarborBox = document.getElementById('safeHarborBox');
-            if (r.meetsSafeHarbor || r.priorYearTax === 0) {
-                safeHarborBox.className = 'success-box p-4 rounded-lg mb-6';
-                safeHarborBox.innerHTML = `
-                    <h4 class="font-bold text-emerald-800 mb-2">✅ On Track - No Penalty Risk</h4>
-                    <p class="text-emerald-700 text-sm">You're meeting safe harbor requirements.</p>
-                `;
-            } else {
-                safeHarborBox.className = 'warning-box p-4 rounded-lg mb-6';
-                safeHarborBox.innerHTML = `
-                    <h4 class="font-bold text-amber-800 mb-2">⚠️ Underpayment Penalty Risk</h4>
-                    <p class="text-amber-700 text-sm mb-2">Pay at least:</p>
-                    <ul class="text-amber-700 text-sm ml-4 list-disc">
-                        <li>90% of this year: <strong>${formatCurrency(r.safeHarbor90)}</strong></li>
-                        ${r.priorYearTax > 0 ? `<li>100% of last year: <strong>${formatCurrency(r.safeHarborHighIncome)}</strong></li>` : ''}
-                    </ul>
-                `;
-            }
-
-            const breakdownHtml = `
-                <div class="flex justify-between py-2 border-b"><span class="text-gray-600">Gross Income</span><span class="font-semibold">${formatCurrency(r.grossIncome)}</span></div>
-                <div class="flex justify-between py-2 border-b"><span class="text-gray-600">− Business Expenses</span><span class="font-semibold text-red-600">-${formatCurrency(r.businessExpenses)}</span></div>
-                <div class="flex justify-between py-2 border-b"><span class="text-gray-600">Self-Employment Tax</span><span class="font-semibold">${formatCurrency(r.selfEmploymentTax)}</span></div>
-                <div class="flex justify-between py-2 border-b"><span class="text-gray-600">Federal Income Tax</span><span class="font-semibold">${formatCurrency(r.federalIncomeTax)}</span></div>
-                ${r.childTaxCredit > 0 ? `<div class="flex justify-between py-2 border-b"><span class="text-gray-600">− Child Tax Credit</span><span class="font-semibold text-emerald-600">-${formatCurrency(r.childTaxCredit)}</span></div>` : ''}
-                <div class="flex justify-between py-2 bg-gray-100 px-2 rounded"><span class="font-bold">Total Tax</span><span class="font-bold">${formatCurrency(r.totalTax)}</span></div>
-                <div class="flex justify-between py-2 border-b"><span class="text-gray-600">− Already Paid</span><span class="font-semibold text-emerald-600">-${formatCurrency(r.totalPaymentsMade)}</span></div>
-                <div class="flex justify-between py-3 bg-indigo-100 px-3 rounded-lg mt-2"><span class="font-bold text-indigo-800">Remaining Due</span><span class="font-bold text-indigo-800">${formatCurrency(r.remainingTaxDue)}</span></div>
-            `;
-            document.getElementById('taxBreakdown').innerHTML = breakdownHtml;
-
-            const tips = [];
-            if (r.netSelfEmployment > 50000 && r.selfEmploymentTax > 7000) {
-                tips.push(`<div class="bg-white p-4 rounded-lg border border-emerald-200"><h4 class="font-semibold text-emerald-800 mb-1">💼 Consider S-Corp</h4><p class="text-sm">Could save ~${formatCurrency(r.selfEmploymentTax * 0.25)} in SE tax.</p></div>`);
-            }
-            if (r.retirementContributions < 20000 && r.netSelfEmployment > 30000) {
-                tips.push(`<div class="bg-white p-4 rounded-lg border border-emerald-200"><h4 class="font-semibold text-emerald-800 mb-1">🏦 Max Retirement</h4><p class="text-sm">Contribute up to $69,000 to SEP-IRA.</p></div>`);
-            }
-            tips.push(`<div class="bg-white p-4 rounded-lg border border-emerald-200"><h4 class="font-semibold text-emerald-800 mb-1">📝 Track Expenses</h4><p class="text-sm">Home office, mileage (67¢/mile), equipment.</p></div>`);
-            document.getElementById('taxTips').innerHTML = tips.join('');
-        }
-
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
-        }
-
-        // ============================================
-        // PDF GENERATION
-        // ============================================
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const r = calculationResults;
-            const primaryColor = clientConfig?.primaryColor || '#4f46e5';
-            const rgb = hexToRgb(primaryColor);
-
-            doc.setFillColor(rgb.r, rgb.g, rgb.b);
-            doc.rect(0, 0, 210, 45, 'F');
             
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Quarterly Tax Report', 105, 18, { align: 'center' });
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Tax Year ${TAX_YEAR}`, 105, 28, { align: 'center' });
-            if (clientConfig?.client) {
-                doc.setFontSize(11);
-                doc.text(`Prepared by ${clientConfig.client}`, 105, 38, { align: 'center' });
+            if (branding.ctaTitle) {
+                document.getElementById('ctaTitle').textContent = branding.ctaTitle;
             }
-
-            doc.setTextColor(0, 0, 0);
-            let y = 55;
-
-            doc.setFillColor(rgb.r, rgb.g, rgb.b);
-            doc.roundedRect(20, y, 170, 35, 3, 3, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.text('Your Quarterly Payment', 105, y + 12, { align: 'center' });
-            doc.setFontSize(28);
-            doc.setFont('helvetica', 'bold');
-            doc.text(formatCurrency(r.quarterlyPayment), 105, y + 28, { align: 'center' });
             
-            y += 45;
-            doc.setTextColor(0, 0, 0);
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Annual Summary', 20, y);
-            y += 8;
-
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            [['Total Tax', formatCurrency(r.totalTax)], ['Already Paid', formatCurrency(r.totalPaymentsMade)], ['Remaining Due', formatCurrency(r.remainingTaxDue)], ['Tax Rate', r.effectiveTaxRate.toFixed(1) + '%']].forEach(item => {
-                doc.text(item[0], 25, y + 5);
-                doc.text(item[1], 170, y + 5, { align: 'right' });
-                y += 7;
-            });
-
-            y += 10;
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Payment Schedule', 20, y);
-            y += 8;
-
-            doc.setFontSize(10);
-            doc.setFillColor(240, 240, 240);
-            doc.rect(20, y, 170, 8, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.text('Quarter', 25, y + 6);
-            doc.text('Due Date', 80, y + 6);
-            doc.text('Amount', 170, y + 6, { align: 'right' });
-            y += 10;
-
-            doc.setFont('helvetica', 'normal');
-            QUARTERLY_DUE_DATES.forEach((q, i) => {
-                if (i % 2 === 0) { doc.setFillColor(250, 250, 250); doc.rect(20, y - 2, 170, 8, 'F'); }
-                doc.text(q.quarter, 25, y + 4);
-                doc.text(q.date, 80, y + 4);
-                doc.text(formatCurrency(r.quarterlyPayment), 170, y + 4, { align: 'right' });
-                y += 8;
-            });
-
-            doc.setFontSize(8);
-            doc.setTextColor(128, 128, 128);
-            doc.text('This is an estimate only. Consult a tax professional.', 105, 280, { align: 'center' });
-            if (clientConfig?.client) {
-                doc.text(`${clientConfig.client} | ${new Date().toLocaleDateString()}`, 105, 287, { align: 'center' });
+            if (branding.ctaDescription) {
+                document.getElementById('ctaDescription').textContent = branding.ctaDescription;
             }
-
-            doc.save(`Quarterly-Tax-Report-${TAX_YEAR}.pdf`);
-        }
-
-        function hexToRgb(hex) {
+            
+            if (branding.ctaText) {
+                document.getElementById('ctaButtonText').textContent = branding.ctaText;
+            }
+            
+            if (branding.ctaLink) {
+                document.getElementById('ctaButton').href = branding.ctaLink;
+                // Open in new tab for McNeal Tax & Associates
+                if (this.config.client === 'McNeal Tax & Associates') {
+                    document.getElementById('ctaButton').target = '_blank';
+                    document.getElementById('ctaButton').rel = 'noopener noreferrer';
+                }
+            }
+            
+            if (branding.footerText) {
+                document.getElementById('footerText').innerHTML = branding.footerText;
+            }
+        },
+        
+        hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 79, g: 70, b: 229 };
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        },
+        
+        showError(code, message) {
+            document.getElementById('loadingScreen').innerHTML = `
+                <div style="text-align: center;">
+                    <h1 style="font-size: 48px; margin-bottom: 20px; color: #ef4444;">🔒 License Error</h1>
+                    <p style="font-size: 18px; margin-bottom: 10px;">${message}</p>
+                    <p style="margin-top: 30px; font-size: 14px; opacity: 0.7;">Error Code: ${code}</p>
+                    <p style="font-size: 14px; opacity: 0.7;">Contact: towfiqul.funnels@gmail.com</p>
+                </div>
+            `;
+        },
+        
+        getKey() { return this.config.key; },
+        getClient() { return this.config.client; },
+        getBranding() { return this.config.branding; }
+    };
+    
+    SecureLicense.validate();
+    </script>
+
+    <div class="container" id="calculatorApp">
+        <div class="header">
+            <h1 id="headerTitle">Tax Refund Estimator · 2025</h1>
+            <p id="headerSubtitle">Free estimate for informational purposes only. Not professional tax advice. Consult a tax professional for accurate filing.</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <div class="success-message" id="successMessage">
+                    ✓ Lead captured successfully! Calculating your refund...
+                </div>
+                
+                <form id="taxForm">
+                    <div class="step">
+                        <div class="step-title">Step 1 · Your Info</div>
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" placeholder="John Smith" required>
+                            <div class="error-message" id="fullNameError">Please enter your full name</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="john@example.com" required>
+                            <div class="error-message" id="emailError">Please enter a valid email</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" id="phone" placeholder="(555) 123-4567" required>
+                            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-title">Step 2 · Filing Status</div>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="filingStatus" value="single" checked>
+                                <span>Single</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filingStatus" value="married">
+                                <span>Married Filing Jointly</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filingStatus" value="marriedSep">
+                                <span>Married Filing Separately</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filingStatus" value="hoh">
+                                <span>Head of Household</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-title">Step 3 · Income</div>
+                        
+                        <!-- Show spouse fields only for MFJ -->
+                        <div id="yourIncomeSection">
+                            <div class="form-group">
+                                <label>Your Wages (W-2 income)</label>
+                                <input type="number" id="wages" value="0" min="0" step="100" placeholder="50000">
+                            </div>
+                            <div class="form-group">
+                                <label>Your Federal Tax Withheld</label>
+                                <input type="number" id="federalWithholding" value="0" min="0" step="100" placeholder="4000">
+                            </div>
+                        </div>
+                        
+                        <!-- Spouse income fields (shown for MFJ only) -->
+                        <div id="spouseIncomeSection" style="display: none; border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px;">
+                            <div class="form-group">
+                                <label>Spouse's Wages (W-2 income)</label>
+                                <input type="number" id="spouseWages" value="0" min="0" step="100" placeholder="35000">
+                            </div>
+                            <div class="form-group">
+                                <label>Spouse's Federal Tax Withheld</label>
+                                <input type="number" id="spouseFederalWithholding" value="0" min="0" step="100" placeholder="3000">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 16px;">
+                            <label>Other Income (Interest, dividends, 1099s, etc.)</label>
+                            <input type="number" id="otherIncome" value="0" min="0" step="100" placeholder="1000">
+                        </div>
+                        <div class="form-group">
+                            <label>Self-Employment Income</label>
+                            <input type="number" id="selfEmploymentIncome" value="0" min="0" step="100" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Adjustments to Income (IRA, student loan interest, HSA, etc.)</label>
+                            <input type="number" id="adjustments" value="0" min="0" step="100" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-title">Step 4 · Deductions</div>
+                        <div class="form-group">
+                            <label>Itemized Deductions (leave 0 to use standard)</label>
+                            <input type="number" id="itemizedDeductions" value="0" min="0" step="100" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-title">Step 5 · Credits & Payments</div>
+                        <div class="form-group">
+                            <label>Number of Children Under 17</label>
+                            <div class="number-spinner">
+                                <button type="button" class="spinner-btn minus-btn" data-delta="-1">−</button>
+                                <span class="spinner-value" id="childrenValue">0</span>
+                                <button type="button" class="spinner-btn plus-btn" data-delta="1">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Estimated Tax Payments (quarterly payments made)</label>
+                            <input type="number" id="estimatedPayments" value="0" min="0" step="100" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>EITC Qualifying Children</label>
+                            <select id="eitcChildren">
+                                <option value="0">0 children</option>
+                                <option value="1">1 child</option>
+                                <option value="2">2 children</option>
+                                <option value="3">3 or more children</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-primary" onclick="calculateRefund()">
+                            Estimate Refund
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <button type="button" class="btn btn-secondary" onclick="downloadPDF()">Download PDF</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h2 style="margin-bottom: 16px; font-size: 22px;">Results</h2>
+                <p style="color: #6b7280; margin-bottom: 20px; font-size: 13px;"><strong>Disclaimer:</strong> These are estimates only, not professional tax advice. Actual results may vary. Consult a tax professional.</p>
+                
+                <div id="resultsContent">
+                    <div class="placeholder">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <p>Enter your numbers and tap Estimate.</p>
+                    </div>
+                </div>
+
+                <div class="cta-box">
+                    <h3 id="ctaTitle">Ready to see your real numbers?</h3>
+                    <p id="ctaDescription">This is just a ballpark. We can run your full return and give you an exact refund amount.</p>
+                    <a href="#" id="ctaButton" class="cta-btn"><span id="ctaButtonText">Start My Tax Intake</span></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p id="footerText">Questions? Contact us at <span class="footer-highlight"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="21484f474e614459404c514d440f424e4c">[email&#160;protected]</a></span> or call <span class="footer-highlight">(555) 123-4567</span></p>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    let children = 0;
+    let lastCalc = null;
+
+    document.querySelectorAll('.radio-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    function updateChildren(delta) {
+        children = Math.max(0, Math.min(10, children + delta));
+        document.getElementById('childrenValue').textContent = children;
+    }
+    
+    // Add event listeners on load for mobile compatibility
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all spinner buttons
+        const spinnerBtns = document.querySelectorAll('.spinner-btn');
+        spinnerBtns.forEach(btn => {
+            const delta = parseInt(btn.getAttribute('data-delta') || '0');
+            
+            // Add click event listener
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                updateChildren(delta);
+            });
+            
+            // Also add touch event for mobile
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                updateChildren(delta);
+            }, { passive: false });
+        });
+        
+        // Show/hide spouse income based on filing status
+        const filingStatusRadios = document.querySelectorAll('input[name="filingStatus"]');
+        filingStatusRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const spouseSection = document.getElementById('spouseIncomeSection');
+                if (this.value === 'married') {
+                    spouseSection.style.display = 'block';
+                } else {
+                    spouseSection.style.display = 'none';
+                    // Reset spouse fields when hidden
+                    document.getElementById('spouseWages').value = '0';
+                    document.getElementById('spouseFederalWithholding').value = '0';
+                }
+            });
+        });
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const fields = {
+            fullName: { value: document.getElementById('fullName').value.trim(), error: 'fullNameError', message: 'Please enter your full name' },
+            email: { value: document.getElementById('email').value.trim(), error: 'emailError', message: 'Please enter a valid email' },
+            phone: { value: document.getElementById('phone').value.trim(), error: 'phoneError', message: 'Please enter a valid phone number' }
+        };
+
+        Object.entries(fields).forEach(([id, field]) => {
+            const input = document.getElementById(id);
+            const errorEl = document.getElementById(field.error);
+            
+            if (!field.value) {
+                input.classList.add('error');
+                errorEl.textContent = field.message;
+                errorEl.style.display = 'block';
+                isValid = false;
+            } else if (id === 'email' && !field.value.includes('@')) {
+                input.classList.add('error');
+                errorEl.textContent = 'Please enter a valid email';
+                errorEl.style.display = 'block';
+                isValid = false;
+            } else {
+                input.classList.remove('error');
+                errorEl.style.display = 'none';
+            }
+        });
+
+        return isValid;
+    }
+
+    async function captureLead(leadData) {
+        try {
+            const licenseKey = SecureLicense.getKey();
+            
+            const response = await fetch(window.location.origin + '/api/capture-lead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    licenseKey: licenseKey,
+                    leadData: leadData
+                })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to capture lead');
+            }
+            
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+            
+            return true;
+        } catch (error) {
+            console.error('Lead capture failed:', error);
+            alert('Unable to save your information. Please try again.');
+            return false;
+        }
+    }
+
+    async function calculateRefund() {
+        if (!validateForm()) {
+            alert('Please fill in all required fields correctly.');
+            return;
         }
 
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-        document.getElementById('deductionType').addEventListener('change', function() {
-            document.getElementById('itemizedSection').classList.toggle('hidden', this.value !== 'itemized');
-        });
+        const btn = document.querySelector('.btn-primary');
+        const originalText = btn.textContent;
+        btn.innerHTML = '<span style="display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></span> Processing...';
+        btn.disabled = true;
 
-        document.getElementById('leadModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
+        const leadData = {
+            fullName: document.getElementById('fullName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            filingStatus: document.querySelector('input[name="filingStatus"]:checked').value,
+            wages: parseFloat(document.getElementById('wages').value) || 0,
+            children: children
+        };
 
-        document.addEventListener('DOMContentLoaded', validateLicense);
+        const wages = parseFloat(document.getElementById('wages').value) || 0;
+        const spouseWages = parseFloat(document.getElementById('spouseWages').value) || 0;
+        const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+        const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
+        const adjustments = parseFloat(document.getElementById('adjustments').value) || 0;
+        const itemizedDeductions = parseFloat(document.getElementById('itemizedDeductions').value) || 0;
+        const federalWithholding = parseFloat(document.getElementById('federalWithholding').value) || 0;
+        const spouseFederalWithholding = parseFloat(document.getElementById('spouseFederalWithholding').value) || 0;
+        const estimatedPayments = parseFloat(document.getElementById('estimatedPayments').value) || 0;
+        const filingStatus = document.querySelector('input[name="filingStatus"]:checked').value;
+        const eitcChildren = parseInt(document.getElementById('eitcChildren').value);
+
+        // ============================================================
+        // Self-Employment Tax Calculation
+        // ============================================================
+        let seTax = 0;
+        let seTaxDeduction = 0;
+        if (selfEmploymentIncome > 0) {
+            const netSEIncome = selfEmploymentIncome * 0.9235;  // 92.35% of SE income
+            seTax = netSEIncome * 0.153;  // 15.3% SE tax rate
+            seTaxDeduction = seTax * 0.5;  // ½ of SE tax is deductible
+        }
+
+        const totalWages = wages + spouseWages + selfEmploymentIncome;
+        const totalAdjustments = adjustments + seTaxDeduction;
+        const agi = totalWages + otherIncome - totalAdjustments;
+        // 2025 Standard Deductions (Rev. Proc. 2024-40)
+        const stdDed = {single:15750,married:31500,marriedSep:15750,hoh:23625}[filingStatus];
+        const deduction = Math.max(itemizedDeductions, stdDed);
+        const taxableIncome = Math.max(0, agi - deduction);
+
+        let tax = 0;
+        const brackets = {
+            single: [[11925,0.10,0],[48475,0.12,1192.50],[103350,0.22,5578.50],[197300,0.24,17651],[250525,0.32,40199],[626350,0.35,57231],[Infinity,0.37,188775.75]],
+            married: [[23850,0.10,0],[96950,0.12,2385],[206700,0.22,11157],[394600,0.24,35302],[501050,0.32,80398],[751600,0.35,114462],[Infinity,0.37,202154.50]],
+            marriedSep: [[11925,0.10,0],[48475,0.12,1192.50],[103350,0.22,5578.50],[197300,0.24,17651],[250525,0.32,40199],[375800,0.35,57231],[Infinity,0.37,101077.25]],
+            hoh: [[17000,0.10,0],[64850,0.12,1700],[103350,0.22,7442],[197300,0.24,15912],[250500,0.32,38460],[626350,0.35,55484],[Infinity,0.37,186981.50]]
+        };
+        
+        const b = brackets[filingStatus];
+        for (let i = 0; i < b.length; i++) {
+            if (taxableIncome <= b[i][0]) {
+                tax = i === 0 ? taxableIncome * b[i][1] : b[i][2] + (taxableIncome - (i > 0 ? b[i-1][0] : 0)) * b[i][1];
+                break;
+            }
+        }
+
+        // ============================================================
+        // Child Tax Credit with Phase-Out (2025)
+        // ============================================================
+        let ctcTotal = children * 2200;
+        
+        // CTC Phase-Out (starts at $200k Single/HOH, $400k MFJ)
+        const ctcPhaseOutThresholds = {single: 200000, married: 400000, marriedSep: 200000, hoh: 200000};
+        const phaseOutThreshold = ctcPhaseOutThresholds[filingStatus];
+        if (agi > phaseOutThreshold) {
+            const excessIncome = agi - phaseOutThreshold;
+            const phaseOutAmount = Math.ceil(excessIncome / 1000) * 50;
+            ctcTotal = Math.max(0, ctcTotal - phaseOutAmount);
+        }
+        
+        const ctcNonRef = Math.min(ctcTotal, tax);
+        
+        // Additional Child Tax Credit (ACTC) - Refundable Portion
+        const remainingCTC = ctcTotal - ctcNonRef;
+        const actcFormula = Math.max(0, (totalWages - 2500) * 0.15);
+        const actcPerChildLimit = children * 1700;  // $1,700 max per child (CRITICAL LIMIT)
+        const actc = Math.min(remainingCTC, actcFormula, actcPerChildLimit);
+
+        // ============================================================
+        // Earned Income Tax Credit (EITC) with Proper Phase-Out (2025)
+        // ============================================================
+        const eitcParams = {
+            0: {max: 649, phaseInRate: 0.0765, phaseInLimit: 8490, 
+                phaseOutStart: {single: 11440, married: 18210}, 
+                phaseOutEnd: {single: 18591, married: 25361}},
+            1: {max: 4328, phaseInRate: 0.34, phaseInLimit: 12730, 
+                phaseOutStart: {single: 24590, married: 31360}, 
+                phaseOutEnd: {single: 49084, married: 55854}},
+            2: {max: 7152, phaseInRate: 0.40, phaseInLimit: 17880, 
+                phaseOutStart: {single: 24590, married: 31360}, 
+                phaseOutEnd: {single: 55768, married: 62538}},
+            3: {max: 8046, phaseInRate: 0.45, phaseInLimit: 17880, 
+                phaseOutStart: {single: 24590, married: 31360}, 
+                phaseOutEnd: {single: 59899, married: 66669}}
+        };
+        
+        const eitcChildrenCount = Math.min(eitcChildren, 3);
+        const params = eitcParams[eitcChildrenCount];
+        const filingType = (filingStatus === 'married') ? 'married' : 'single';
+        const incomeForEITC = Math.max(agi, totalWages);  // Use greater of AGI or earned income
+        
+        let eitc = 0;
+        if (incomeForEITC <= params.phaseOutEnd[filingType]) {
+            if (incomeForEITC <= params.phaseInLimit) {
+                // Phase-in region
+                eitc = incomeForEITC * params.phaseInRate;
+            } else if (incomeForEITC <= params.phaseOutStart[filingType]) {
+                // Plateau region (full credit)
+                eitc = params.max;
+            } else {
+                // Phase-out region
+                const phaseOutIncome = incomeForEITC - params.phaseOutStart[filingType];
+                const phaseOutRange = params.phaseOutEnd[filingType] - params.phaseOutStart[filingType];
+                const phaseOutRate = params.max / phaseOutRange;
+                eitc = Math.max(0, params.max - (phaseOutIncome * phaseOutRate));
+            }
+            eitc = Math.min(eitc, params.max);
+        }
+
+        const taxAfterCredits = Math.max(0, tax - ctcNonRef);
+        const totalTax = taxAfterCredits + seTax;  // Add SE tax to total tax
+        const totalRefundableCredits = actc + eitc;
+        const totalPayments = federalWithholding + spouseFederalWithholding + estimatedPayments;
+        const refund = totalPayments + totalRefundableCredits - totalTax;
+
+        lastCalc = {leadData, results: {agi, deduction, taxableIncome, tax, seTax, ctcNonRef, actc, eitc, totalRefundableCredits, taxAfterCredits, totalTax, totalPayments, refund}};
+
+        const captured = await captureLead(leadData);
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
+        if (!captured) return;
+
+        displayResults(lastCalc.results);
+    }
+
+    function displayResults(d) {
+        const seTaxLine = d.seTax > 0 ? `<div class="breakdown-item"><span class="breakdown-label">Self-Employment Tax</span><span class="breakdown-value">$${d.seTax.toLocaleString()}</span></div>` : '';
+        const html = `
+            <div class="results-grid">
+                <div class="result-card"><div class="result-label">AGI</div><div class="result-value">$${d.agi.toLocaleString()}</div></div>
+                <div class="result-card"><div class="result-label">Deduction</div><div class="result-value">$${d.deduction.toLocaleString()}</div></div>
+                <div class="result-card"><div class="result-label">Taxable</div><div class="result-value">$${d.taxableIncome.toLocaleString()}</div></div>
+                <div class="result-card"><div class="result-label">Income Tax</div><div class="result-value">$${d.tax.toLocaleString()}</div></div>
+            </div>
+            <div class="refund-display ${d.refund >= 0 ? '' : 'owe'}">
+                <div class="refund-label">${d.refund >= 0 ? 'ESTIMATED REFUND' : 'ESTIMATED TAX DUE'}</div>
+                <div class="refund-amount">$${Math.abs(d.refund).toLocaleString()}</div>
+            </div>
+            <div class="breakdown">
+                <div class="breakdown-item"><span class="breakdown-label">Income Tax (before credits)</span><span class="breakdown-value">$${d.tax.toLocaleString()}</span></div>
+                ${seTaxLine}
+                <div class="breakdown-item"><span class="breakdown-label">CTC (non-refundable)</span><span class="breakdown-value">$${d.ctcNonRef.toLocaleString()}</span></div>
+                <div class="breakdown-item"><span class="breakdown-label">ACTC (refundable)</span><span class="breakdown-value">$${d.actc.toLocaleString()}</span></div>
+                <div class="breakdown-item"><span class="breakdown-label">EITC (refundable)</span><span class="breakdown-value">$${d.eitc.toLocaleString()}</span></div>
+                <div class="breakdown-item"><span class="breakdown-label">Total refundable credits</span><span class="breakdown-value">$${d.totalRefundableCredits.toLocaleString()}</span></div>
+                <div class="breakdown-item"><span class="breakdown-label">Tax after credits</span><span class="breakdown-value">$${d.totalTax.toLocaleString()}</span></div>
+                <div class="breakdown-item" style="border-bottom: 2px solid #111827;"><span class="breakdown-label">Total payments</span><span class="breakdown-value">$${d.totalPayments.toLocaleString()}</span></div>
+            </div>
+        `;
+        document.getElementById('resultsContent').innerHTML = html;
+    }
+
+    function resetForm() {
+        document.getElementById('taxForm').reset();
+        children = 0;
+        document.getElementById('childrenValue').textContent = '0';
+        document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+        document.querySelector('.radio-option').classList.add('selected');
+        document.getElementById('successMessage').style.display = 'none';
+        document.getElementById('resultsContent').innerHTML = '<div class="placeholder"><svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg><p>Enter your numbers and tap Estimate.</p></div>';
+    }
+
+    function downloadPDF() {
+        if (!lastCalc) { alert('Please calculate first'); return; }
+        
+        const {jsPDF} = window.jspdf;
+        const doc = new jsPDF();
+        const c = lastCalc;
+        const clientName = SecureLicense.getClient();
+        const branding = SecureLicense.getBranding();
+        
+        let primaryRgb = {r: 102, g: 126, b: 234};
+        if (branding && branding.estimateButtonBg) {
+            const rgb = SecureLicense.hexToRgb(branding.estimateButtonBg);
+            if (rgb) primaryRgb = rgb;
+        }
+        
+        doc.setFillColor(26, 26, 26);
+        doc.rect(0, 0, 210, 50, 'F');
+        
+        doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text(clientName, 105, 15, {align: 'center'});
+        
+        doc.setFontSize(22);
+        doc.text('Tax Refund Estimate', 105, 28, {align: 'center'});
+        
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'normal');
+        doc.text('2025 Federal Tax Calculation', 105, 38, {align: 'center'});
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        let y = 65;
+        doc.text(`Name: ${c.leadData.fullName}`, 20, y); y += 7;
+        doc.text(`Email: ${c.leadData.email}`, 20, y); y += 7;
+        doc.text(`Phone: ${c.leadData.phone}`, 20, y); y += 7;
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
+        
+        y = 105;
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+        doc.text('Tax Calculation Results', 20, y); y += 10;
+        
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        
+        const results = [
+            ['Adjusted Gross Income (AGI)', `$${c.results.agi.toLocaleString()}`],
+            ['Standard/Itemized Deduction', `$${c.results.deduction.toLocaleString()}`],
+            ['Taxable Income', `$${c.results.taxableIncome.toLocaleString()}`],
+            ['Tax Before Credits', `$${c.results.tax.toLocaleString()}`],
+            ['Child Tax Credit', `$${c.results.ctcNonRef.toLocaleString()}`],
+            ['Additional Child Tax Credit', `$${c.results.actc.toLocaleString()}`],
+            ['Earned Income Tax Credit', `$${c.results.eitc.toLocaleString()}`],
+            ['Total Payments', `$${c.results.totalPayments.toLocaleString()}`]
+        ];
+        
+        results.forEach(([label, value]) => {
+            doc.text(label, 20, y);
+            doc.text(value, 190, y, {align: 'right'});
+            y += 8;
+        });
+        
+        y += 12;
+        const isRefund = c.results.refund >= 0;
+        doc.setFillColor(isRefund ? 16 : 239, isRefund ? 185 : 68, isRefund ? 129 : 68);
+        doc.rect(20, y - 5, 170, 25, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text(isRefund ? 'ESTIMATED REFUND' : 'ESTIMATED TAX DUE', 105, y + 3, {align: 'center'});
+        
+        doc.setFontSize(24);
+        doc.text(`$${Math.abs(c.results.refund).toLocaleString()}`, 105, y + 15, {align: 'center'});
+        
+        y += 35;
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(8);
+        doc.setFont(undefined, 'italic');
+        doc.text('This is an estimate only. Actual refund may differ based on complete tax return.', 105, y, {align: 'center'});
+        y += 5;
+        doc.text(`Prepared by ${clientName}`, 105, y, {align: 'center'});
+        
+        const fileName = `Tax-Estimate-${c.leadData.fullName.replace(/\s/g, '-')}.pdf`;
+        doc.save(fileName);
+    }
     </script>
 </body>
 </html>
