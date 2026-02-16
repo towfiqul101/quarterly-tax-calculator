@@ -802,6 +802,95 @@
 let licenseData = null;
 let calcResults = null;
 
+// ═══════════════════════════════════════════════════════════════
+// CLIENT-SIDE LICENSE VALIDATION
+// Embedded licenses + optional GitHub fetch for updates
+// No API dependency — works instantly on any static host
+// ═══════════════════════════════════════════════════════════════
+
+const LICENSES = [
+    {
+        key: "QETC-demo123xyz",
+        client: "Demo Tax Services",
+        domain: "demo.com",
+        logo: "",
+        primaryColor: "#4f46e5",
+        webhook: "",
+        ctaUrl: "#",
+        ctaText: "📞 Schedule a Tax Consultation",
+        expires: "2026-12-31",
+        status: "active"
+    },
+    {
+        key: "QETC-mcneal2026",
+        client: "McNeal Tax & Associates",
+        domain: "mcnealtax.com",
+        logo: "",
+        primaryColor: "#D4AF37",
+        webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        ctaUrl: "https://mcnealtax.com/schedule",
+        ctaText: "📞 Book Your Free Consultation",
+        expires: "2026-12-31",
+        status: "active"
+    },
+    {
+        key: "QETC-swiftexpress2026",
+        client: "Swift Express Tax",
+        domain: "swiftexpresstax.com",
+        logo: "",
+        primaryColor: "#1e40af",
+        webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        ctaUrl: "https://swiftexpresstax.com/file-today",
+        ctaText: "📞 File Your Taxes Today",
+        expires: "2026-12-31",
+        status: "active"
+    },
+    {
+        key: "QETC-dixon2026",
+        client: "Dixon Financial",
+        domain: "dixonfinancial.com",
+        logo: "",
+        primaryColor: "#047857",
+        webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        ctaUrl: "https://dixonfinancial.com/contact",
+        ctaText: "📞 Get Expert Tax Help",
+        expires: "2026-12-31",
+        status: "active"
+    }
+];
+
+// Optional: GitHub license URLs for dynamic updates (tries both branches)
+const GITHUB_LICENSE_URLS = [
+    'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/main/licenses.json',
+    'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/master/licenses.json'
+];
+
+async function fetchGitHubLicenses() {
+    for (const url of GITHUB_LICENSE_URLS) {
+        try {
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    console.log('✅ Licenses loaded from GitHub:', url);
+                    return data;
+                }
+            }
+        } catch (e) {
+            console.warn('GitHub fetch failed:', url);
+        }
+    }
+    return null;
+}
+
+function validateLicense(licenses, key) {
+    const license = licenses.find(l => l.key === key);
+    if (!license) return { valid: false, message: 'Invalid license key. Please contact your tax professional.' };
+    if (license.status !== 'active') return { valid: false, message: 'This license has been deactivated.' };
+    if (license.expires && new Date(license.expires) < new Date()) return { valid: false, message: 'This license has expired.' };
+    return { valid: true, license };
+}
+
 (async function init() {
     const params = new URLSearchParams(window.location.search);
     const key = params.get('key');
@@ -811,38 +900,23 @@ let calcResults = null;
         return;
     }
 
-    try {
-        const resp = await fetch(`/api/validate?key=${encodeURIComponent(key)}`);
-        const data = await resp.json();
-        if (!data.valid) {
-            showError(data.message || 'Invalid or expired license key.');
-            return;
-        }
-        licenseData = data.license;
-        applyBranding(licenseData);
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('progressBar').style.display = 'block';
-        document.getElementById('mainApp').style.display = 'block';
-    } catch (e) {
-        // Fallback: try demo mode
-        console.warn('API validation failed, trying demo mode:', e);
-        if (key === 'demo' || key === 'QETC-demo123xyz') {
-            licenseData = {
-                client: 'Demo Tax Services',
-                primaryColor: '#4f46e5',
-                logo: '',
-                webhook: '',
-                ctaUrl: '#',
-                ctaText: '📞 Schedule a Tax Consultation'
-            };
-            applyBranding(licenseData);
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('progressBar').style.display = 'block';
-            document.getElementById('mainApp').style.display = 'block';
-        } else {
-            showError('Unable to validate license. Please try again or contact support.');
-        }
+    // Try GitHub licenses first (for dynamic updates), fallback to embedded
+    let licenses = LICENSES;
+    const ghLicenses = await fetchGitHubLicenses();
+    if (ghLicenses) licenses = ghLicenses;
+
+    const result = validateLicense(licenses, key);
+
+    if (!result.valid) {
+        showError(result.message);
+        return;
     }
+
+    licenseData = result.license;
+    applyBranding(licenseData);
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('progressBar').style.display = 'block';
+    document.getElementById('mainApp').style.display = 'block';
 })();
 
 function showError(msg) {
