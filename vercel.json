@@ -1,32 +1,4 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "index.html",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "api/**/*.js",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/index.html"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                { "key": "X-Frame-Options", "value": "ALLOWALL" },
-                { "key": "Access-Control-Allow-Origin", "value": "*" }
-            ]
-        }
-    ]
+    "buildCommand": "echo 'No build needed'",
+    "outputDirectory": "./"
 }
