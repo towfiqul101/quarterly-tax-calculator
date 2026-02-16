@@ -8,10 +8,9 @@
         "webhook": "",
         "ctaUrl": "#",
         "ctaText": "📞 Schedule a Tax Consultation",
-        "expires": "2026-12-31",
+        "expires": "2027-12-31",
         "status": "active",
-        "created": "2026-02-17",
-        "notes": "Demo license for testing"
+        "created": "2026-02-17"
     },
     {
         "key": "QETC-mcneal2026",
@@ -22,10 +21,9 @@
         "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         "ctaUrl": "https://mcnealtax.com/schedule",
         "ctaText": "📞 Book Your Free Consultation",
-        "expires": "2026-12-31",
+        "expires": "2027-12-31",
         "status": "active",
-        "created": "2026-02-17",
-        "notes": "McNeal Tax client"
+        "created": "2026-02-17"
     },
     {
         "key": "QETC-swiftexpress2026",
@@ -36,10 +34,9 @@
         "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         "ctaUrl": "https://swiftexpresstax.com/file-today",
         "ctaText": "📞 File Your Taxes Today",
-        "expires": "2026-12-31",
+        "expires": "2027-12-31",
         "status": "active",
-        "created": "2026-02-17",
-        "notes": "Swift Express Tax client"
+        "created": "2026-02-17"
     },
     {
         "key": "QETC-dixon2026",
@@ -50,9 +47,8 @@
         "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         "ctaUrl": "https://dixonfinancial.com/contact",
         "ctaText": "📞 Get Expert Tax Help",
-        "expires": "2026-12-31",
+        "expires": "2027-12-31",
         "status": "active",
-        "created": "2026-02-17",
-        "notes": "Dixon Financial client"
+        "created": "2026-02-17"
     }
 ]
