@@ -3,1323 +3,1556 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tax Refund Estimator 2025</title>
+    <title>2026 Quarterly Estimated Tax Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Header Colors */
-            --header-bg-color: #1a1a1a;
-            --header-title-color: #667eea;
-            --header-subtitle-color: #ffffff;
-            
-            /* Section Titles */
-            --section-title-color: #667eea;
-            
-            /* Form Elements */
-            --label-text-color: #374151;
-            --input-bg-color: #ffffff;
-            --input-text-color: #374151;
-            --input-border-color: #e5e7eb;
-            --input-focus-border-color: #667eea;
-            --placeholder-text-color: #9ca3af;
-            
-            /* Buttons */
-            --estimate-button-bg: #667eea;
-            --estimate-button-text: #ffffff;
-            --reset-button-bg: #ffffff;
-            --reset-button-text: #667eea;
-            --reset-button-border: #667eea;
-            --download-button-bg: #ffffff;
-            --download-button-text: #667eea;
-            --download-button-border: #667eea;
-            
-            /* Radio Buttons */
-            --radio-bg-color: #ffffff;
-            --radio-border-color: #e5e7eb;
-            --radio-selected-border-color: #667eea;
-            --radio-selected-bg-color: rgba(102, 126, 234, 0.1);
-            --radio-text-color: #374151;
-            
-            /* Number Spinner */
-            --spinner-button-bg: #ffffff;
-            --spinner-button-text: #667eea;
-            --spinner-button-border: #667eea;
-            --spinner-value-text: #374151;
-            
-            /* Results Section */
-            --results-bg-color: #ffffff;
-            --results-card-bg: #f3f4f6;
-            --results-label-color: #6b7280;
-            --results-value-color: #374151;
-            
-            /* Refund Display */
-            --refund-positive-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --refund-negative-bg: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            --refund-text-color: #ffffff;
-            
-            /* CTA Box */
-            --cta-box-bg: #1a1a1a;
-            --cta-title-color: #ffd93d;
-            --cta-description-color: #e5e7eb;
-            --cta-button-bg: #ffd93d;
-            --cta-button-text: #000000;
-            
-            /* Footer */
-            --footer-bg-color: #1a1a1a;
-            --footer-text-color: #e5e7eb;
-            --footer-highlight-color: #ffd93d;
-            
-            /* Page Background */
-            --page-bg-color: #f3f4f6;
-            --form-section-bg: #f3f4f6;
-            
-            /* Success Message */
-            --success-message-bg: #10b981;
-            --success-message-text: #ffffff;
-            
-            /* Helper for RGB calculations */
-            --primary-rgb: 102, 126, 234;
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.15);
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --success: #059669;
+            --success-light: #d1fae5;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 24px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+            --radius: 14px;
+            --radius-sm: 8px;
         }
-        
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box;
-        }
-        
-        /* MOBILE SCROLL OPTIMIZATION */
-        html {
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-        }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: var(--page-bg-color);
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
-            overflow-y: auto;
-            /* Smooth scrolling for iOS */
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
         }
-        
-        /* Custom thin scrollbar */
-        body::-webkit-scrollbar {
-            width: 6px;
+
+        /* ── Loading & Error Screens ── */
+        .overlay-screen {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
         }
-        
-        body::-webkit-scrollbar-track {
-            background: transparent;
+        #loadingScreen {
+            background: linear-gradient(135deg, var(--primary) 0%, #6d28d9 100%);
+            color: #fff;
         }
-        
-        body::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+        #errorScreen {
+            background: #0f172a; color: #fff; display: none;
         }
-        
-        body::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.3);
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(255,255,255,0.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
         }
-        
-        /* Firefox thin scrollbar */
-        body {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-        }
-        
-        /* Prevent scroll lag on mobile */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-        }
-        
-        .license-error { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; }
-        .license-error h1 { font-size: 48px; margin-bottom: 20px; color: #ef4444; }
-        .license-error p { font-size: 16px; margin-bottom: 10px; max-width: 600px; text-align: center; }
-        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 9999; }
-        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 10px auto; 
-            background: var(--results-bg-color); 
-            border-radius: 16px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-            overflow: hidden; 
+        .overlay-screen h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 8px; }
+        .overlay-screen p { opacity: 0.8; font-size: 14px; }
+        #errorScreen .error-icon { font-size: 64px; margin-bottom: 16px; }
+        #errorScreen h2 { color: #f87171; }
+
+        /* ── Progress Bar ── */
+        .progress-wrapper {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
             display: none;
-            /* Mobile scroll optimization */
-            will-change: transform;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
+            position: sticky; top: 0; z-index: 100;
         }
-        
-        .header { 
-            background: var(--header-bg-color); 
-            color: var(--header-title-color); 
-            padding: 25px 20px; 
-            text-align: center; 
+        .progress-inner {
+            max-width: 680px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            position: relative;
         }
-        .header h1 { 
-            font-size: 24px; 
-            margin-bottom: 6px; 
-            color: var(--header-title-color); 
+        .progress-line-bg {
+            position: absolute; top: 50%; left: 24px; right: 24px;
+            height: 3px; background: var(--border);
+            transform: translateY(-50%);
         }
-        .header p { 
-            color: var(--header-subtitle-color); 
-            font-size: 14px; 
+        .progress-line-fill {
+            height: 100%; background: var(--primary);
+            transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+            border-radius: 2px;
         }
-        
-        .main-content { display: grid; grid-template-columns: 1fr; gap: 0; }
-        .form-section { 
-            padding: 25px 20px; 
-            background: var(--form-section-bg); 
+        .step-dot {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 600;
+            background: #fff; border: 2.5px solid var(--border);
+            color: var(--text-secondary);
+            position: relative; z-index: 2;
+            transition: all 0.35s ease;
         }
-        .results-section { 
-            padding: 25px 20px; 
-            background: var(--results-bg-color); 
+        .step-dot.active {
+            background: var(--primary); border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 0 5px var(--primary-glow);
         }
-        
-        .step { margin-bottom: 24px; }
-        .step-title { 
-            font-size: 13px; 
-            font-weight: 700; 
-            color: var(--section-title-color); 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            margin-bottom: 12px; 
+        .step-dot.completed {
+            background: var(--success); border-color: var(--success);
+            color: #fff;
         }
-        
-        .form-group { margin-bottom: 16px; }
-        label { 
-            display: block; 
-            font-weight: 600; 
-            margin-bottom: 6px; 
-            color: var(--label-text-color); 
-            font-size: 14px; 
+        .step-label {
+            position: absolute; bottom: -22px; left: 50%;
+            transform: translateX(-50%); font-size: 10px;
+            font-weight: 500; white-space: nowrap;
+            color: var(--text-secondary);
         }
-        
-        input, select { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid var(--input-border-color); 
-            border-radius: 8px; 
-            font-size: 15px; 
-            transition: all 0.3s; 
-            background: var(--input-bg-color); 
-            color: var(--input-text-color); 
+        .step-dot.active .step-label { color: var(--primary); font-weight: 600; }
+        .step-dot.completed .step-label { color: var(--success); }
+
+        /* ── Main Container ── */
+        .container {
+            max-width: 720px; margin: 0 auto; padding: 24px 16px 60px;
+            display: none;
         }
-        
-        input::placeholder {
-            color: var(--placeholder-text-color);
+
+        /* ── Header ── */
+        .calc-header {
+            text-align: center; margin-bottom: 32px; padding: 36px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6d28d9 60%, #a855f7 100%);
+            border-radius: var(--radius);
+            color: #fff;
+            position: relative; overflow: hidden;
         }
-        
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: var(--input-focus-border-color); 
-            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); 
+        .calc-header::before {
+            content: ''; position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='g' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(255,255,255,0.07)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect fill='url(%23g)' width='60' height='60'/%3E%3C/svg%3E");
+            opacity: 0.6;
         }
-        
-        input.error { border-color: #ef4444; }
-        .error-message { color: #ef4444; font-size: 13px; margin-top: 4px; display: none; }
-        
-        .success-message { 
-            background: var(--success-message-bg); 
-            color: var(--success-message-text); 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin-bottom: 16px; 
-            display: none; 
-            font-size: 14px; 
+        .calc-header * { position: relative; z-index: 1; }
+        .calc-header img { max-height: 52px; margin-bottom: 14px; }
+        .calc-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 6px; line-height: 1.2; }
+        .calc-header p { font-size: 14px; opacity: 0.85; max-width: 460px; margin: 0 auto; }
+        .tax-year-badge {
+            display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(6px);
+            padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            margin-bottom: 12px; letter-spacing: 0.5px;
         }
-        
-        .radio-group { display: flex; flex-direction: column; gap: 8px; }
-        .radio-option { 
-            display: flex; 
-            align-items: center; 
-            padding: 12px; 
-            border: 2px solid var(--radio-border-color); 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            font-size: 14px; 
-            background: var(--radio-bg-color);
-            color: var(--radio-text-color);
+
+        /* ── Form Cards ── */
+        .form-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px 28px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideUp 0.4s ease;
+            border: 1px solid var(--border);
         }
-        .radio-option:hover { 
-            border-color: var(--radio-selected-border-color); 
-            background: var(--radio-selected-bg-color); 
+        .form-card.active { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .radio-option input[type="radio"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
-        .radio-option.selected { 
-            border-color: var(--radio-selected-border-color); 
-            background: var(--radio-selected-bg-color); 
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700; margin-bottom: 4px;
+            color: var(--text);
         }
-        
-        .number-spinner { display: flex; align-items: center; gap: 12px; }
-        .spinner-btn { 
-            width: 40px; 
-            height: 40px; 
-            border: 2px solid var(--spinner-button-border); 
-            background: var(--spinner-button-bg); 
-            border-radius: 8px; 
-            font-size: 18px; 
-            cursor: pointer; 
-            color: var(--spinner-button-text); 
-            transition: all 0.3s; 
+        .card-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+
+        /* ── Form Fields ── */
+        .field-group { margin-bottom: 20px; }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--text); margin-bottom: 6px;
         }
-        .spinner-btn:hover { 
-            background: var(--spinner-button-border); 
-            color: white; 
+        label .optional { font-weight: 400; color: var(--text-secondary); font-size: 11px; }
+        input, select {
+            width: 100%; padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px; color: var(--text);
+            background: #fff;
+            transition: all 0.2s ease;
+            outline: none;
         }
-        .spinner-value { 
-            font-size: 18px; 
-            font-weight: 600; 
-            min-width: 30px; 
-            text-align: center; 
-            color: var(--spinner-value-text); 
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
         }
-        
-        .button-group { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
-        .btn { 
-            padding: 14px 20px; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            width: 100%; 
+        input::placeholder { color: #94a3b8; }
+        .input-prefix {
+            position: relative;
         }
-        
-        .btn-primary { 
-            background: var(--estimate-button-bg); 
-            color: var(--estimate-button-text); 
+        .input-prefix::before {
+            content: '$'; position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%); color: var(--text-secondary); font-weight: 500; font-size: 15px;
+            z-index: 1;
         }
-        .btn-primary:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3); 
+        .input-prefix input { padding-left: 28px; }
+        .field-help { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+        /* ── Buttons ── */
+        .btn-row {
+            display: flex; gap: 12px; margin-top: 28px;
         }
-        .btn-primary:disabled { 
-            opacity: 0.6; 
-            cursor: not-allowed; 
-            transform: none; 
+        .btn {
+            padding: 13px 28px; border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 600;
+            cursor: pointer; border: none;
+            transition: all 0.2s ease;
+            display: inline-flex; align-items: center; gap: 8px;
         }
-        
-        .btn-secondary { 
-            background: var(--reset-button-bg); 
-            color: var(--reset-button-text); 
-            border: 2px solid var(--reset-button-border); 
+        .btn-primary {
+            background: var(--primary); color: #fff; flex: 1;
+            justify-content: center;
         }
-        .btn-secondary:hover { 
-            background: rgba(var(--primary-rgb), 0.05); 
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px var(--primary-glow); }
+        .btn-back {
+            background: var(--bg); color: var(--text-secondary);
+            border: 1.5px solid var(--border);
         }
-        
-        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .result-card { 
-            background: var(--results-card-bg); 
-            padding: 14px; 
-            border-radius: 8px; 
-            border: 1px solid #e5e7eb; 
+        .btn-back:hover { background: #fff; border-color: #cbd5e1; }
+
+        /* ── Results Page ── */
+        .results-wrapper { display: none; animation: slideUp 0.5s ease; }
+
+        .hero-result {
+            background: linear-gradient(135deg, var(--primary) 0%, #6d28d9 60%, #a855f7 100%);
+            border-radius: var(--radius);
+            padding: 40px 28px;
+            text-align: center; color: #fff;
+            position: relative; overflow: hidden;
+            margin-bottom: 20px;
         }
-        .result-label { 
-            font-size: 11px; 
-            color: var(--results-label-color); 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-            margin-bottom: 4px; 
+        .hero-result::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
         }
-        .result-value { 
-            font-size: 20px; 
-            font-weight: 700; 
-            color: var(--results-value-color); 
+        .hero-result * { position: relative; }
+        .hero-result .label { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; margin-bottom: 8px; }
+        .hero-result .amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 52px; font-weight: 800; line-height: 1;
+            margin-bottom: 4px;
         }
-        
-        .refund-display { 
-            background: var(--refund-positive-bg); 
-            color: var(--refund-text-color); 
-            padding: 24px; 
-            border-radius: 12px; 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .hero-result .sub { font-size: 15px; opacity: 0.8; }
+        .hero-result .divider { width: 50px; height: 2px; background: rgba(255,255,255,0.3); margin: 18px auto; border-radius: 1px; }
+        .hero-stats {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1px; background: rgba(255,255,255,0.15);
+            border-radius: 10px; overflow: hidden;
+            margin-top: 24px;
         }
-        .refund-display.owe { 
-            background: var(--refund-negative-bg); 
+        .hero-stat {
+            background: rgba(255,255,255,0.08);
+            padding: 16px 12px; text-align: center;
         }
-        .refund-label { 
-            font-size: 13px; 
-            opacity: 0.9; 
-            margin-bottom: 8px; 
+        .hero-stat .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 4px; }
+        .hero-stat .stat-value { font-size: 20px; font-weight: 700; }
+
+        /* Payment Schedule */
+        .schedule-card {
+            background: var(--card); border-radius: var(--radius);
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            padding: 28px; margin-bottom: 20px;
         }
-        .refund-amount { 
-            font-size: 36px; 
-            font-weight: 700; 
+        .schedule-card .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 10px;
         }
-        
-        .breakdown { margin-top: 20px; }
-        .breakdown-item { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 10px 0; 
-            border-bottom: 1px solid #e5e7eb; 
-            font-size: 14px; 
+        .schedule-item {
+            display: flex; align-items: center; gap: 16px;
+            padding: 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
         }
-        .breakdown-label { 
-            color: var(--results-label-color); 
+        .schedule-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .schedule-item .q-badge {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; color: #fff;
+            flex-shrink: 0;
         }
-        .breakdown-value { 
-            font-weight: 600; 
-            color: var(--results-value-color); 
+        .q1 .q-badge { background: #6366f1; }
+        .q2 .q-badge { background: #8b5cf6; }
+        .q3 .q-badge { background: #a855f7; }
+        .q4 .q-badge { background: #c084fc; }
+        .schedule-item .q-info { flex: 1; }
+        .schedule-item .q-period { font-size: 12px; color: var(--text-secondary); }
+        .schedule-item .q-date { font-size: 14px; font-weight: 600; color: var(--text); }
+        .schedule-item .q-amount { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .schedule-item .q-status {
+            font-size: 11px; font-weight: 600; padding: 4px 10px;
+            border-radius: 20px;
         }
-        
-        .cta-box { 
-            background: var(--cta-box-bg); 
-            padding: 20px; 
-            border-radius: 8px; 
-            text-align: center; 
-            margin-top: 20px; 
+        .status-upcoming { background: var(--accent-light); color: var(--warning); }
+        .status-due-soon { background: var(--danger-light); color: var(--danger); }
+        .status-past { background: #f1f5f9; color: var(--text-secondary); }
+
+        /* Safe Harbor Alert */
+        .alert-box {
+            padding: 18px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            display: flex; gap: 12px; align-items: flex-start;
+            font-size: 13px; line-height: 1.6;
         }
-        .cta-box h3 { 
-            margin-bottom: 6px; 
-            font-size: 17px; 
-            color: var(--cta-title-color); 
+        .alert-box .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+        .alert-warning { background: var(--warning-light); border: 1px solid #fcd34d; color: #92400e; }
+        .alert-success { background: var(--success-light); border: 1px solid #6ee7b7; color: #065f46; }
+        .alert-danger { background: var(--danger-light); border: 1px solid #fca5a5; color: #991b1b; }
+        .alert-info { background: var(--primary-light); border: 1px solid #c7d2fe; color: #3730a3; }
+        .alert-title { font-weight: 700; margin-bottom: 2px; }
+
+        /* Tax Breakdown */
+        .breakdown-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
         }
-        .cta-box p { 
-            color: var(--cta-description-color); 
-            font-size: 13px; 
-            margin-bottom: 14px; 
+        .breakdown-item:last-child { border-bottom: none; }
+        .breakdown-item .bd-label { color: var(--text-secondary); }
+        .breakdown-item .bd-value { font-weight: 600; }
+        .breakdown-item.bd-total { border-top: 2px solid var(--text); padding-top: 14px; margin-top: 4px; }
+        .breakdown-item.bd-total .bd-label { font-weight: 700; color: var(--text); font-size: 15px; }
+        .breakdown-item.bd-total .bd-value { font-size: 18px; color: var(--primary); }
+        .breakdown-item.bd-deduct .bd-value { color: var(--success); }
+
+        /* Tips Section */
+        .tip-item {
+            display: flex; gap: 12px; padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px; line-height: 1.5;
         }
-        .cta-btn { 
-            display: inline-block; 
-            background: var(--cta-button-bg); 
-            color: var(--cta-button-text); 
-            padding: 12px 24px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            transition: all 0.3s; 
-            font-size: 14px; 
+        .tip-item:last-child { border-bottom: none; }
+        .tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+        /* CTA & Action Buttons */
+        .action-btns {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            margin-bottom: 20px;
         }
-        .cta-btn:hover { 
-            transform: translateY(-2px); 
-            opacity: 0.9; 
+        .action-btn {
+            padding: 14px; border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; border: 1.5px solid var(--border);
+            background: #fff; color: var(--text);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s ease;
         }
-        
-        .footer { 
-            background: var(--footer-bg-color); 
-            color: var(--footer-text-color); 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 13px; 
+        .action-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        .cta-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, #6d28d9 100%);
+            border-radius: var(--radius);
+            padding: 28px; text-align: center; color: #fff;
+            margin-bottom: 20px;
         }
-        .footer-highlight { 
-            color: var(--footer-highlight-color); 
-            font-weight: 600; 
+        .cta-banner h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 8px; }
+        .cta-banner p { font-size: 13px; opacity: 0.85; margin-bottom: 16px; }
+        .cta-btn {
+            display: inline-block; padding: 12px 32px;
+            background: #fff; color: var(--primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px; font-weight: 700;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
-        
-        .placeholder { 
-            text-align: center; 
-            color: var(--placeholder-text-color); 
-            padding: 30px 20px; 
-            font-size: 14px; 
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-top: 16px;
         }
-        .required { color: #ef4444; }
-        
-        @media (min-width: 768px) {
-            .container { margin: 20px auto; }
-            .header h1 { font-size: 28px; }
-            .header p { font-size: 15px; }
-            .form-section, .results-section { padding: 30px; }
-            .button-group { flex-direction: row; }
-            .btn { flex: 1; }
+        .pay-method {
+            padding: 14px; border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 12px; text-align: center;
         }
-        
-        /* ==========================================
-           iOS/iPhone CRITICAL SCROLL FIXES
-           ========================================== */
-        
-        /* Enable iOS momentum scrolling globally */
-        html {
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
+        .pay-method .pay-icon { font-size: 22px; margin-bottom: 4px; }
+        .pay-method .pay-name { font-weight: 600; color: var(--text); }
+        .pay-method .pay-desc { color: var(--text-secondary); margin-top: 2px; }
+
+        /* Footer */
+        .calc-footer {
+            text-align: center; padding: 24px 16px;
+            font-size: 11px; color: var(--text-secondary);
+            line-height: 1.7;
         }
-        
-        body {
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        /* Mobile/Tablet optimizations - iOS focused */
-        @media (max-width: 967px) {
-            /* CRITICAL: Force block layout - NO GRID (causes iOS sticking) */
-            .main-content {
-                display: block !important;
-                grid-template-columns: none !important;
-                gap: 0 !important;
-            }
-            
-            /* Remove ALL transforms on mobile - main iOS sticking cause */
-            * {
-                transform: none !important;
-                -webkit-transform: none !important;
-                will-change: auto !important;
-            }
-            
-            /* Faster transitions for mobile */
-            * {
-                transition-duration: 0.1s !important;
-            }
-            
-            /* Simplify container for better iOS performance */
-            .container {
-                border-radius: 0 !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-            }
-            
-            /* Remove borders between sections */
-            .form-section {
-                border-right: none !important;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            
-            /* Disable hover effects on mobile (prevent repaint) */
-            .radio-option:hover,
-            .btn-primary:hover,
-            .btn-secondary:hover,
-            .spinner-btn:hover,
-            .cta-btn:hover {
-                transform: none !important;
-                box-shadow: none !important;
-            }
-            
-            /* Force iOS momentum scroll */
-            html, body {
-                -webkit-overflow-scrolling: touch !important;
-                overflow-y: scroll;
-            }
-            
-            /* Simplify rounded corners on mobile */
-            .radio-option,
-            .btn,
-            input,
-            select {
-                border-radius: 6px !important;
-            }
-        }
-        
-        /* iOS Safari specific targeting */
-        @supports (-webkit-touch-callout: none) {
-            /* This applies ONLY to iOS Safari */
-            body {
-                cursor: pointer;
-                -webkit-tap-highlight-color: transparent;
-            }
-            
-            * {
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-        
-        @media (min-width: 968px) {
-            .main-content { grid-template-columns: 1fr 1fr; }
-            .form-section { border-right: 1px solid #e5e7eb; }
-            .header h1 { font-size: 32px; }
-            .form-section, .results-section { padding: 40px; }
-            .results-grid { gap: 16px; }
-            .result-value { font-size: 24px; }
-            .refund-amount { font-size: 48px; }
-            .refund-display { padding: 32px; }
-        }
-        
-        #__vercel_toolbar, #__vercel_banner, [id*="vercel-toolbar"], [class*="vercel-toolbar"], 
-        [id^="vercel"], [class^="vercel"], iframe[src*="vercel.live"], iframe[src*="_vercel"],
-        div[class*="Toolbar"], div[id*="toolbar"] {
-            display: none !important; visibility: hidden !important; opacity: 0 !important;
-            height: 0 !important; width: 0 !important; position: absolute !important;
-            pointer-events: none !important; z-index: -9999 !important;
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 16px 12px 48px; }
+            .form-card { padding: 24px 18px; }
+            .field-row { grid-template-columns: 1fr; gap: 0; }
+            .calc-header h1 { font-size: 22px; }
+            .calc-header { padding: 28px 18px; }
+            .hero-result .amount { font-size: 40px; }
+            .hero-stats { grid-template-columns: 1fr; }
+            .action-btns { grid-template-columns: 1fr; }
+            .payment-methods { grid-template-columns: 1fr; }
+            .progress-inner { gap: 0; }
+            .step-label { display: none; }
+            .schedule-item { flex-wrap: wrap; }
+            .schedule-item .q-amount { width: 100%; text-align: right; }
         }
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div class="spinner"></div>
-        <p>Validating license...</p>
+
+<!-- Loading Screen -->
+<div class="overlay-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <h2>Validating License...</h2>
+    <p>Please wait a moment</p>
+</div>
+
+<!-- Error Screen -->
+<div class="overlay-screen" id="errorScreen">
+    <div class="error-icon">🔒</div>
+    <h2>Access Denied</h2>
+    <p id="errorMessage">Invalid or expired license key. Please contact your tax professional.</p>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-wrapper" id="progressBar">
+    <div class="progress-inner">
+        <div class="progress-line-bg"><div class="progress-line-fill" id="progressFill"></div></div>
+        <div class="step-dot active" data-step="1">1<span class="step-label">Income</span></div>
+        <div class="step-dot" data-step="2">2<span class="step-label">Deductions</span></div>
+        <div class="step-dot" data-step="3">3<span class="step-label">Credits</span></div>
+        <div class="step-dot" data-step="4">4<span class="step-label">Payments</span></div>
+        <div class="step-dot" data-step="5">5<span class="step-label">Contact</span></div>
+        <div class="step-dot" data-step="6">✓<span class="step-label">Results</span></div>
+    </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp">
+
+    <!-- Header -->
+    <div class="calc-header" id="calcHeader">
+        <img id="companyLogo" src="" alt="" style="display:none;">
+        <div class="tax-year-badge">TAX YEAR 2026</div>
+        <h1 id="calcTitle">Quarterly Estimated Tax Calculator</h1>
+        <p>Calculate your quarterly estimated tax payments for 2026 using the latest IRS rules & OBBBA updates</p>
     </div>
 
-    <script>
-    const SecureLicense = {
-        config: null,
-        apiUrl: window.location.origin + '/api/validate',
-        
-        async validate() {
-            const params = new URLSearchParams(window.location.search);
-            const key = params.get('key');
-            
-            if (!key) {
-                this.showError('MISSING_KEY', 'No license key provided.');
-                return false;
-            }
-            
-            try {
-                const response = await fetch(this.apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        key: key,
-                        domain: window.location.hostname
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (!data.valid) {
-                    this.showError(data.error, data.message);
-                    return false;
-                }
-                
-                this.config = {
-                    key: key,
-                    webhook: data.webhook,
-                    client: data.client,
-                    branding: data.branding
-                };
-                
-                this.applyBranding(data.branding);
-                this.applyText(data.branding);
-                
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('calculatorApp').style.display = 'block';
-                
-                console.log('%c✓ License Valid', 'color: #10b981; font-size: 14px; font-weight: bold;');
-                console.log('%cClient:', data.client, 'color: ' + (data.branding?.headerTitleColor || '#667eea') + '; font-size: 12px;');
-                
-                return true;
-                
-            } catch (error) {
-                console.error('Validation error:', error);
-                this.showError('VALIDATION_FAILED', 
-                    'Could not validate license. Please check your internet connection and try again.');
-                return false;
-            }
-        },
-        
-        applyBranding(branding) {
-            if (!branding) return;
-            
-            const root = document.documentElement;
-            
-            // Map descriptive names to CSS variables
-            const colorMap = {
-                // Header
-                'headerBgColor': '--header-bg-color',
-                'headerTitleColor': '--header-title-color',
-                'headerSubtitleColor': '--header-subtitle-color',
-                
-                // Section Titles
-                'sectionTitleColor': '--section-title-color',
-                
-                // Form Elements
-                'labelTextColor': '--label-text-color',
-                'inputBgColor': '--input-bg-color',
-                'inputTextColor': '--input-text-color',
-                'inputBorderColor': '--input-border-color',
-                'inputFocusBorderColor': '--input-focus-border-color',
-                'placeholderTextColor': '--placeholder-text-color',
-                
-                // Buttons
-                'estimateButtonBg': '--estimate-button-bg',
-                'estimateButtonText': '--estimate-button-text',
-                'resetButtonBg': '--reset-button-bg',
-                'resetButtonText': '--reset-button-text',
-                'resetButtonBorder': '--reset-button-border',
-                'downloadButtonBg': '--download-button-bg',
-                'downloadButtonText': '--download-button-text',
-                'downloadButtonBorder': '--download-button-border',
-                
-                // Radio Buttons
-                'radioBgColor': '--radio-bg-color',
-                'radioBorderColor': '--radio-border-color',
-                'radioSelectedBorderColor': '--radio-selected-border-color',
-                'radioSelectedBgColor': '--radio-selected-bg-color',
-                'radioTextColor': '--radio-text-color',
-                
-                // Number Spinner
-                'spinnerButtonBg': '--spinner-button-bg',
-                'spinnerButtonText': '--spinner-button-text',
-                'spinnerButtonBorder': '--spinner-button-border',
-                'spinnerValueText': '--spinner-value-text',
-                
-                // Results
-                'resultsBgColor': '--results-bg-color',
-                'resultsCardBg': '--results-card-bg',
-                'resultsLabelColor': '--results-label-color',
-                'resultsValueColor': '--results-value-color',
-                
-                // Refund Display
-                'refundPositiveBg': '--refund-positive-bg',
-                'refundNegativeBg': '--refund-negative-bg',
-                'refundTextColor': '--refund-text-color',
-                
-                // CTA Box
-                'ctaBoxBg': '--cta-box-bg',
-                'ctaTitleColor': '--cta-title-color',
-                'ctaDescriptionColor': '--cta-description-color',
-                'ctaButtonBg': '--cta-button-bg',
-                'ctaButtonText': '--cta-button-text',
-                
-                // Footer
-                'footerBgColor': '--footer-bg-color',
-                'footerTextColor': '--footer-text-color',
-                'footerHighlightColor': '--footer-highlight-color',
-                
-                // Page
-                'pageBgColor': '--page-bg-color',
-                'formSectionBg': '--form-section-bg',
-                
-                // Success Message
-                'successMessageBg': '--success-message-bg',
-                'successMessageText': '--success-message-text'
-            };
-            
-            // Apply each branding color if it exists
-            Object.keys(colorMap).forEach(brandingKey => {
-                if (branding[brandingKey]) {
-                    root.style.setProperty(colorMap[brandingKey], branding[brandingKey]);
-                }
-            });
-            
-            // Calculate RGB for primary color (use estimateButtonBg as primary)
-            if (branding.estimateButtonBg) {
-                const rgb = this.hexToRgb(branding.estimateButtonBg);
-                if (rgb) {
-                    root.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-                }
-            }
-        },
-        
-        applyText(branding) {
-            if (!branding) return;
-            
-            if (branding.headerTitle) {
-                document.getElementById('headerTitle').textContent = branding.headerTitle;
-            }
-            
-            if (branding.headerSubtitle) {
-                document.getElementById('headerSubtitle').textContent = branding.headerSubtitle;
-            }
-            
-            if (branding.ctaTitle) {
-                document.getElementById('ctaTitle').textContent = branding.ctaTitle;
-            }
-            
-            if (branding.ctaDescription) {
-                document.getElementById('ctaDescription').textContent = branding.ctaDescription;
-            }
-            
-            if (branding.ctaText) {
-                document.getElementById('ctaButtonText').textContent = branding.ctaText;
-            }
-            
-            if (branding.ctaLink) {
-                document.getElementById('ctaButton').href = branding.ctaLink;
-                // Open in new tab for McNeal Tax & Associates
-                if (this.config.client === 'McNeal Tax & Associates') {
-                    document.getElementById('ctaButton').target = '_blank';
-                    document.getElementById('ctaButton').rel = 'noopener noreferrer';
-                }
-            }
-            
-            if (branding.footerText) {
-                document.getElementById('footerText').innerHTML = branding.footerText;
-            }
-        },
-        
-        hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        },
-        
-        showError(code, message) {
-            document.getElementById('loadingScreen').innerHTML = `
-                <div style="text-align: center;">
-                    <h1 style="font-size: 48px; margin-bottom: 20px; color: #ef4444;">🔒 License Error</h1>
-                    <p style="font-size: 18px; margin-bottom: 10px;">${message}</p>
-                    <p style="margin-top: 30px; font-size: 14px; opacity: 0.7;">Error Code: ${code}</p>
-                    <p style="font-size: 14px; opacity: 0.7;">Contact: towfiqul.funnels@gmail.com</p>
-                </div>
-            `;
-        },
-        
-        getKey() { return this.config.key; },
-        getClient() { return this.config.client; },
-        getBranding() { return this.config.branding; }
-    };
-    
-    SecureLicense.validate();
-    </script>
+    <!-- ═══ STEP 1: Income ═══ -->
+    <div class="form-card active" id="step1">
+        <div class="card-title">Income Information</div>
+        <div class="card-subtitle">Tell us about your expected 2026 income sources</div>
 
-    <div class="container" id="calculatorApp">
-        <div class="header">
-            <h1 id="headerTitle">Tax Refund Estimator · 2025</h1>
-            <p id="headerSubtitle">Free estimate for informational purposes only. Not professional tax advice. Consult a tax professional for accurate filing.</p>
+        <div class="field-group">
+            <label>Filing Status</label>
+            <select id="filingStatus">
+                <option value="single">Single</option>
+                <option value="married_joint">Married Filing Jointly</option>
+                <option value="married_separate">Married Filing Separately</option>
+                <option value="head_household">Head of Household</option>
+            </select>
         </div>
-        
-        <div class="main-content">
-            <div class="form-section">
-                <div class="success-message" id="successMessage">
-                    ✓ Lead captured successfully! Calculating your refund...
+
+        <div class="field-group field-row">
+            <div>
+                <label>W-2 Wages / Salary</label>
+                <div class="input-prefix">
+                    <input type="text" id="w2Wages" placeholder="0" inputmode="numeric">
                 </div>
-                
-                <form id="taxForm">
-                    <div class="step">
-                        <div class="step-title">Step 1 · Your Info</div>
-                        <div class="form-group">
-                            <label>Full Name <span class="required">*</span></label>
-                            <input type="text" id="fullName" placeholder="John Smith" required>
-                            <div class="error-message" id="fullNameError">Please enter your full name</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Email <span class="required">*</span></label>
-                            <input type="email" id="email" placeholder="john@example.com" required>
-                            <div class="error-message" id="emailError">Please enter a valid email</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone <span class="required">*</span></label>
-                            <input type="tel" id="phone" placeholder="(555) 123-4567" required>
-                            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-title">Step 2 · Filing Status</div>
-                        <div class="radio-group">
-                            <label class="radio-option selected">
-                                <input type="radio" name="filingStatus" value="single" checked>
-                                <span>Single</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filingStatus" value="married">
-                                <span>Married Filing Jointly</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filingStatus" value="marriedSep">
-                                <span>Married Filing Separately</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="filingStatus" value="hoh">
-                                <span>Head of Household</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-title">Step 3 · Income</div>
-                        
-                        <!-- Show spouse fields only for MFJ -->
-                        <div id="yourIncomeSection">
-                            <div class="form-group">
-                                <label>Your Wages (W-2 income)</label>
-                                <input type="number" id="wages" value="0" min="0" step="100" placeholder="50000">
-                            </div>
-                            <div class="form-group">
-                                <label>Your Federal Tax Withheld</label>
-                                <input type="number" id="federalWithholding" value="0" min="0" step="100" placeholder="4000">
-                            </div>
-                        </div>
-                        
-                        <!-- Spouse income fields (shown for MFJ only) -->
-                        <div id="spouseIncomeSection" style="display: none; border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px;">
-                            <div class="form-group">
-                                <label>Spouse's Wages (W-2 income)</label>
-                                <input type="number" id="spouseWages" value="0" min="0" step="100" placeholder="35000">
-                            </div>
-                            <div class="form-group">
-                                <label>Spouse's Federal Tax Withheld</label>
-                                <input type="number" id="spouseFederalWithholding" value="0" min="0" step="100" placeholder="3000">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-top: 16px;">
-                            <label>Other Income (Interest, dividends, 1099s, etc.)</label>
-                            <input type="number" id="otherIncome" value="0" min="0" step="100" placeholder="1000">
-                        </div>
-                        <div class="form-group">
-                            <label>Self-Employment Income</label>
-                            <input type="number" id="selfEmploymentIncome" value="0" min="0" step="100" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Adjustments to Income (IRA, student loan interest, HSA, etc.)</label>
-                            <input type="number" id="adjustments" value="0" min="0" step="100" placeholder="0">
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-title">Step 4 · Deductions</div>
-                        <div class="form-group">
-                            <label>Itemized Deductions (leave 0 to use standard)</label>
-                            <input type="number" id="itemizedDeductions" value="0" min="0" step="100" placeholder="0">
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-title">Step 5 · Credits & Payments</div>
-                        <div class="form-group">
-                            <label>Number of Children Under 17</label>
-                            <div class="number-spinner">
-                                <button type="button" class="spinner-btn minus-btn" data-delta="-1">−</button>
-                                <span class="spinner-value" id="childrenValue">0</span>
-                                <button type="button" class="spinner-btn plus-btn" data-delta="1">+</button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Estimated Tax Payments (quarterly payments made)</label>
-                            <input type="number" id="estimatedPayments" value="0" min="0" step="100" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>EITC Qualifying Children</label>
-                            <select id="eitcChildren">
-                                <option value="0">0 children</option>
-                                <option value="1">1 child</option>
-                                <option value="2">2 children</option>
-                                <option value="3">3 or more children</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button type="button" class="btn btn-primary" onclick="calculateRefund()">
-                            Estimate Refund
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-                        <button type="button" class="btn btn-secondary" onclick="downloadPDF()">Download PDF</button>
-                    </div>
-                </form>
+                <div class="field-help">Total expected wages from employers</div>
             </div>
-
-            <div class="results-section">
-                <h2 style="margin-bottom: 16px; font-size: 22px;">Results</h2>
-                <p style="color: #6b7280; margin-bottom: 20px; font-size: 13px;"><strong>Disclaimer:</strong> These are estimates only, not professional tax advice. Actual results may vary. Consult a tax professional.</p>
-                
-                <div id="resultsContent">
-                    <div class="placeholder">
-                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 16px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                        <p>Enter your numbers and tap Estimate.</p>
-                    </div>
+            <div>
+                <label>Self-Employment Income</label>
+                <div class="input-prefix">
+                    <input type="text" id="selfEmployment" placeholder="0" inputmode="numeric">
                 </div>
-
-                <div class="cta-box">
-                    <h3 id="ctaTitle">Ready to see your real numbers?</h3>
-                    <p id="ctaDescription">This is just a ballpark. We can run your full return and give you an exact refund amount.</p>
-                    <a href="#" id="ctaButton" class="cta-btn"><span id="ctaButtonText">Start My Tax Intake</span></a>
-                </div>
+                <div class="field-help">Gross business / freelance income</div>
             </div>
         </div>
-        
-        <div class="footer">
-            <p id="footerText">Questions? Contact us at <span class="footer-highlight"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="21484f474e614459404c514d440f424e4c">[email&#160;protected]</a></span> or call <span class="footer-highlight">(555) 123-4567</span></p>
+
+        <div class="field-group field-row">
+            <div>
+                <label>Business Expenses <span class="optional">(if self-employed)</span></label>
+                <div class="input-prefix">
+                    <input type="text" id="bizExpenses" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+            <div>
+                <label>Other Income <span class="optional">(optional)</span></label>
+                <div class="input-prefix">
+                    <input type="text" id="otherIncome" placeholder="0" inputmode="numeric">
+                </div>
+                <div class="field-help">Interest, dividends, rental, capital gains</div>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="goToStep(2)">Continue →</button>
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    let children = 0;
-    let lastCalc = null;
+    <!-- ═══ STEP 2: Deductions ═══ -->
+    <div class="form-card" id="step2">
+        <div class="card-title">Deductions</div>
+        <div class="card-subtitle">Choose your deduction method for 2026</div>
 
-    document.querySelectorAll('.radio-option').forEach(option => {
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
-            this.classList.add('selected');
-            this.querySelector('input[type="radio"]').checked = true;
-        });
-    });
+        <div class="field-group">
+            <label>Deduction Type</label>
+            <select id="deductionType" onchange="toggleItemized()">
+                <option value="standard">Standard Deduction (Recommended)</option>
+                <option value="itemized">Itemized Deductions</option>
+            </select>
+            <div class="field-help" id="standardInfo">
+                2026 Standard Deduction: <strong>$16,100</strong> (Single) · <strong>$32,200</strong> (MFJ) · <strong>$24,150</strong> (HoH)
+            </div>
+        </div>
 
-    function updateChildren(delta) {
-        children = Math.max(0, Math.min(10, children + delta));
-        document.getElementById('childrenValue').textContent = children;
+        <div id="itemizedSection" style="display:none;">
+            <div class="field-group field-row">
+                <div>
+                    <label>State & Local Taxes (SALT)</label>
+                    <div class="input-prefix">
+                        <input type="text" id="saltDeduction" placeholder="0" inputmode="numeric">
+                    </div>
+                    <div class="field-help">SALT cap applies</div>
+                </div>
+                <div>
+                    <label>Mortgage Interest</label>
+                    <div class="input-prefix">
+                        <input type="text" id="mortgageInterest" placeholder="0" inputmode="numeric">
+                    </div>
+                </div>
+            </div>
+            <div class="field-group field-row">
+                <div>
+                    <label>Charitable Contributions</label>
+                    <div class="input-prefix">
+                        <input type="text" id="charitableContrib" placeholder="0" inputmode="numeric">
+                    </div>
+                </div>
+                <div>
+                    <label>Medical Expenses <span class="optional">(above 7.5% AGI)</span></label>
+                    <div class="input-prefix">
+                        <input type="text" id="medicalExpenses" placeholder="0" inputmode="numeric">
+                    </div>
+                </div>
+            </div>
+            <div class="field-group">
+                <label>Other Itemized Deductions</label>
+                <div class="input-prefix">
+                    <input type="text" id="otherItemized" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Are you 65 or older?</label>
+            <select id="isSenior">
+                <option value="no">No</option>
+                <option value="single_senior">Yes — Single/HoH filer</option>
+                <option value="one_spouse">Yes — One spouse is 65+</option>
+                <option value="both_spouses">Yes — Both spouses are 65+</option>
+            </select>
+            <div class="field-help">Seniors may qualify for additional standard deduction + new $6,000 OBBBA deduction</div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-back" onclick="goToStep(1)">← Back</button>
+            <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- ═══ STEP 3: Credits ═══ -->
+    <div class="form-card" id="step3">
+        <div class="card-title">Tax Credits</div>
+        <div class="card-subtitle">Credits directly reduce your tax bill dollar-for-dollar</div>
+
+        <div class="field-group field-row">
+            <div>
+                <label>Qualifying Children (under 17)</label>
+                <select id="numChildren">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5+</option>
+                </select>
+                <div class="field-help">Child Tax Credit: $2,200/child for 2026</div>
+            </div>
+            <div>
+                <label>Other Dependents</label>
+                <select id="numOtherDependents">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4+</option>
+                </select>
+                <div class="field-help">Other Dependent Credit: $500/dependent</div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Other Tax Credits <span class="optional">(Education, Energy, etc.)</span></label>
+            <div class="input-prefix">
+                <input type="text" id="otherCredits" placeholder="0" inputmode="numeric">
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-back" onclick="goToStep(2)">← Back</button>
+            <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- ═══ STEP 4: Payments Already Made ═══ -->
+    <div class="form-card" id="step4">
+        <div class="card-title">Payments & Withholding</div>
+        <div class="card-subtitle">How much tax have you already paid or expect to have withheld?</div>
+
+        <div class="field-group">
+            <label>Federal Tax Withheld from W-2(s)</label>
+            <div class="input-prefix">
+                <input type="text" id="federalWithholding" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="field-help">Total federal income tax withheld by employer(s) for 2026</div>
+        </div>
+
+        <div class="field-group">
+            <label>Estimated Tax Payments Already Made <span class="optional">(for 2026)</span></label>
+            <div class="input-prefix">
+                <input type="text" id="estimatedPaid" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="field-help">Include any 1040-ES payments you've already sent to the IRS</div>
+        </div>
+
+        <div class="field-group">
+            <label>Prior Year Tax Liability <span class="optional">(for safe harbor calculation)</span></label>
+            <div class="input-prefix">
+                <input type="text" id="priorYearTax" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="field-help">Your total tax from last year's return (Line 24 of 2025 Form 1040)</div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-back" onclick="goToStep(3)">← Back</button>
+            <button class="btn btn-primary" onclick="goToStep(5)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- ═══ STEP 5: Contact Info ═══ -->
+    <div class="form-card" id="step5">
+        <div class="card-title">Get Your Results</div>
+        <div class="card-subtitle">Enter your details to receive a personalized tax report</div>
+
+        <div class="field-group field-row">
+            <div>
+                <label>First Name</label>
+                <input type="text" id="firstName" placeholder="John">
+            </div>
+            <div>
+                <label>Last Name</label>
+                <input type="text" id="lastName" placeholder="Doe">
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="john@example.com">
+        </div>
+
+        <div class="field-group">
+            <label>Phone Number <span class="optional">(optional)</span></label>
+            <input type="tel" id="phone" placeholder="(555) 123-4567">
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-back" onclick="goToStep(4)">← Back</button>
+            <button class="btn btn-primary" onclick="calculateAndShow()">🧮 Calculate My Quarterly Taxes</button>
+        </div>
+    </div>
+
+    <!-- ═══ RESULTS ═══ -->
+    <div class="results-wrapper" id="resultsSection">
+
+        <!-- Hero Result -->
+        <div class="hero-result" id="heroResult">
+            <div class="label">YOUR QUARTERLY ESTIMATED PAYMENT</div>
+            <div class="amount" id="quarterlyAmount">$0</div>
+            <div class="sub">Due each quarter for Tax Year 2026</div>
+            <div class="divider"></div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="stat-label">Annual Tax</div>
+                    <div class="stat-value" id="totalTaxStat">$0</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-label">Already Paid</div>
+                    <div class="stat-value" id="paidStat">$0</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-label">Tax Rate</div>
+                    <div class="stat-value" id="rateStat">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safe Harbor Alert -->
+        <div id="safeHarborAlert"></div>
+
+        <!-- Payment Schedule -->
+        <div class="schedule-card">
+            <div class="section-title">📅 2026 Payment Schedule</div>
+            <div id="paymentSchedule"></div>
+        </div>
+
+        <!-- Tax Breakdown -->
+        <div class="schedule-card">
+            <div class="section-title">📊 Tax Breakdown</div>
+            <div id="taxBreakdown"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-btns">
+            <button class="action-btn" onclick="downloadPDF()">📄 Download PDF Report</button>
+            <button class="action-btn" onclick="window.print()">🖨️ Print Results</button>
+            <button class="action-btn" onclick="startOver()">🔄 Recalculate</button>
+            <button class="action-btn" onclick="shareResults()">📤 Share Results</button>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="schedule-card">
+            <div class="section-title">💳 How to Pay</div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Use Form 1040-ES or pay online through one of these IRS-approved methods:</p>
+            <div class="payment-methods">
+                <div class="pay-method">
+                    <div class="pay-icon">🏦</div>
+                    <div class="pay-name">IRS Direct Pay</div>
+                    <div class="pay-desc">Free bank transfer</div>
+                </div>
+                <div class="pay-method">
+                    <div class="pay-icon">🔁</div>
+                    <div class="pay-name">EFTPS</div>
+                    <div class="pay-desc">Federal tax system</div>
+                </div>
+                <div class="pay-method">
+                    <div class="pay-icon">💳</div>
+                    <div class="pay-name">Credit / Debit Card</div>
+                    <div class="pay-desc">Processing fee applies</div>
+                </div>
+                <div class="pay-method">
+                    <div class="pay-icon">📮</div>
+                    <div class="pay-name">Mail Voucher</div>
+                    <div class="pay-desc">Form 1040-ES</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Saving Tips -->
+        <div class="schedule-card">
+            <div class="section-title">💡 Tax Saving Tips</div>
+            <div id="taxTips"></div>
+        </div>
+
+        <!-- CTA Banner -->
+        <div class="cta-banner" id="ctaBanner">
+            <h3>Need Help With Your Quarterly Taxes?</h3>
+            <p>Our tax professionals can help you optimize your estimated payments and minimize penalties.</p>
+            <a class="cta-btn" id="ctaLink" href="#">📞 Schedule a Consultation</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="calc-footer">
+        <strong>Disclaimer:</strong> This calculator provides estimates for informational purposes only and should not be considered tax, legal, or financial advice.
+        Tax situations vary. Consult a qualified tax professional for personalized guidance.
+        <br>Based on 2026 IRS tax brackets, OBBBA updates, and Revenue Procedure 2025-32.
+        <br><br>
+        <span id="poweredBy" style="opacity:0.5;">Powered by Quarterly Tax Calculator</span>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// LICENSE VALIDATION & MULTI-TENANT BRANDING
+// ═══════════════════════════════════════════════════════════════
+
+let licenseData = null;
+let calcResults = null;
+
+(async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('key');
+
+    if (!key) {
+        showError('No license key provided. Please use the link provided by your tax professional.');
+        return;
     }
-    
-    // Add event listeners on load for mobile compatibility
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all spinner buttons
-        const spinnerBtns = document.querySelectorAll('.spinner-btn');
-        spinnerBtns.forEach(btn => {
-            const delta = parseInt(btn.getAttribute('data-delta') || '0');
-            
-            // Add click event listener
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                updateChildren(delta);
-            });
-            
-            // Also add touch event for mobile
-            btn.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                updateChildren(delta);
-            }, { passive: false });
-        });
-        
-        // Show/hide spouse income based on filing status
-        const filingStatusRadios = document.querySelectorAll('input[name="filingStatus"]');
-        filingStatusRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                const spouseSection = document.getElementById('spouseIncomeSection');
-                if (this.value === 'married') {
-                    spouseSection.style.display = 'block';
-                } else {
-                    spouseSection.style.display = 'none';
-                    // Reset spouse fields when hidden
-                    document.getElementById('spouseWages').value = '0';
-                    document.getElementById('spouseFederalWithholding').value = '0';
-                }
-            });
-        });
-    });
 
-    function validateForm() {
-        let isValid = true;
-        const fields = {
-            fullName: { value: document.getElementById('fullName').value.trim(), error: 'fullNameError', message: 'Please enter your full name' },
-            email: { value: document.getElementById('email').value.trim(), error: 'emailError', message: 'Please enter a valid email' },
-            phone: { value: document.getElementById('phone').value.trim(), error: 'phoneError', message: 'Please enter a valid phone number' }
-        };
-
-        Object.entries(fields).forEach(([id, field]) => {
-            const input = document.getElementById(id);
-            const errorEl = document.getElementById(field.error);
-            
-            if (!field.value) {
-                input.classList.add('error');
-                errorEl.textContent = field.message;
-                errorEl.style.display = 'block';
-                isValid = false;
-            } else if (id === 'email' && !field.value.includes('@')) {
-                input.classList.add('error');
-                errorEl.textContent = 'Please enter a valid email';
-                errorEl.style.display = 'block';
-                isValid = false;
-            } else {
-                input.classList.remove('error');
-                errorEl.style.display = 'none';
-            }
-        });
-
-        return isValid;
-    }
-
-    async function captureLead(leadData) {
-        try {
-            const licenseKey = SecureLicense.getKey();
-            
-            const response = await fetch(window.location.origin + '/api/capture-lead', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    licenseKey: licenseKey,
-                    leadData: leadData
-                })
-            });
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.error || 'Failed to capture lead');
-            }
-            
-            document.getElementById('successMessage').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('successMessage').style.display = 'none';
-            }, 5000);
-            
-            return true;
-        } catch (error) {
-            console.error('Lead capture failed:', error);
-            alert('Unable to save your information. Please try again.');
-            return false;
-        }
-    }
-
-    async function calculateRefund() {
-        if (!validateForm()) {
-            alert('Please fill in all required fields correctly.');
+    try {
+        const resp = await fetch(`/api/validate?key=${encodeURIComponent(key)}`);
+        const data = await resp.json();
+        if (!data.valid) {
+            showError(data.message || 'Invalid or expired license key.');
             return;
         }
-
-        const btn = document.querySelector('.btn-primary');
-        const originalText = btn.textContent;
-        btn.innerHTML = '<span style="display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></span> Processing...';
-        btn.disabled = true;
-
-        const leadData = {
-            fullName: document.getElementById('fullName').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            filingStatus: document.querySelector('input[name="filingStatus"]:checked').value,
-            wages: parseFloat(document.getElementById('wages').value) || 0,
-            children: children
-        };
-
-        const wages = parseFloat(document.getElementById('wages').value) || 0;
-        const spouseWages = parseFloat(document.getElementById('spouseWages').value) || 0;
-        const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
-        const selfEmploymentIncome = parseFloat(document.getElementById('selfEmploymentIncome').value) || 0;
-        const adjustments = parseFloat(document.getElementById('adjustments').value) || 0;
-        const itemizedDeductions = parseFloat(document.getElementById('itemizedDeductions').value) || 0;
-        const federalWithholding = parseFloat(document.getElementById('federalWithholding').value) || 0;
-        const spouseFederalWithholding = parseFloat(document.getElementById('spouseFederalWithholding').value) || 0;
-        const estimatedPayments = parseFloat(document.getElementById('estimatedPayments').value) || 0;
-        const filingStatus = document.querySelector('input[name="filingStatus"]:checked').value;
-        const eitcChildren = parseInt(document.getElementById('eitcChildren').value);
-
-        // ============================================================
-        // Self-Employment Tax Calculation
-        // ============================================================
-        let seTax = 0;
-        let seTaxDeduction = 0;
-        if (selfEmploymentIncome > 0) {
-            const netSEIncome = selfEmploymentIncome * 0.9235;  // 92.35% of SE income
-            seTax = netSEIncome * 0.153;  // 15.3% SE tax rate
-            seTaxDeduction = seTax * 0.5;  // ½ of SE tax is deductible
+        licenseData = data.license;
+        applyBranding(licenseData);
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('progressBar').style.display = 'block';
+        document.getElementById('mainApp').style.display = 'block';
+    } catch (e) {
+        // Fallback: try demo mode
+        console.warn('API validation failed, trying demo mode:', e);
+        if (key === 'demo' || key === 'QETC-demo123xyz') {
+            licenseData = {
+                client: 'Demo Tax Services',
+                primaryColor: '#4f46e5',
+                logo: '',
+                webhook: '',
+                ctaUrl: '#',
+                ctaText: '📞 Schedule a Tax Consultation'
+            };
+            applyBranding(licenseData);
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'block';
+        } else {
+            showError('Unable to validate license. Please try again or contact support.');
         }
+    }
+})();
 
-        const totalWages = wages + spouseWages + selfEmploymentIncome;
-        const totalAdjustments = adjustments + seTaxDeduction;
-        const agi = totalWages + otherIncome - totalAdjustments;
-        // 2025 Standard Deductions (Rev. Proc. 2024-40)
-        const stdDed = {single:15750,married:31500,marriedSep:15750,hoh:23625}[filingStatus];
-        const deduction = Math.max(itemizedDeductions, stdDed);
-        const taxableIncome = Math.max(0, agi - deduction);
+function showError(msg) {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('errorScreen').style.display = 'flex';
+    document.getElementById('errorMessage').textContent = msg;
+}
 
-        let tax = 0;
-        const brackets = {
-            single: [[11925,0.10,0],[48475,0.12,1192.50],[103350,0.22,5578.50],[197300,0.24,17651],[250525,0.32,40199],[626350,0.35,57231],[Infinity,0.37,188775.75]],
-            married: [[23850,0.10,0],[96950,0.12,2385],[206700,0.22,11157],[394600,0.24,35302],[501050,0.32,80398],[751600,0.35,114462],[Infinity,0.37,202154.50]],
-            marriedSep: [[11925,0.10,0],[48475,0.12,1192.50],[103350,0.22,5578.50],[197300,0.24,17651],[250525,0.32,40199],[375800,0.35,57231],[Infinity,0.37,101077.25]],
-            hoh: [[17000,0.10,0],[64850,0.12,1700],[103350,0.22,7442],[197300,0.24,15912],[250500,0.32,38460],[626350,0.35,55484],[Infinity,0.37,186981.50]]
-        };
-        
-        const b = brackets[filingStatus];
-        for (let i = 0; i < b.length; i++) {
-            if (taxableIncome <= b[i][0]) {
-                tax = i === 0 ? taxableIncome * b[i][1] : b[i][2] + (taxableIncome - (i > 0 ? b[i-1][0] : 0)) * b[i][1];
-                break;
-            }
+function applyBranding(lic) {
+    const color = lic.primaryColor || '#4f46e5';
+    document.documentElement.style.setProperty('--primary', color);
+
+    // Compute darker shade
+    const hex = color.replace('#', '');
+    const r = Math.max(0, parseInt(hex.substr(0,2),16) - 30);
+    const g = Math.max(0, parseInt(hex.substr(2,2),16) - 30);
+    const b = Math.max(0, parseInt(hex.substr(4,2),16) - 30);
+    document.documentElement.style.setProperty('--primary-dark', `rgb(${r},${g},${b})`);
+    document.documentElement.style.setProperty('--primary-glow', color + '25');
+    document.documentElement.style.setProperty('--primary-light', color + '0d');
+
+    if (lic.logo) {
+        const logo = document.getElementById('companyLogo');
+        logo.src = lic.logo;
+        logo.style.display = 'block';
+    }
+    if (lic.client) {
+        document.getElementById('calcTitle').textContent = `${lic.client} — Quarterly Tax Calculator`;
+    }
+    if (lic.ctaText) {
+        document.getElementById('ctaLink').textContent = lic.ctaText;
+    }
+    if (lic.ctaUrl) {
+        document.getElementById('ctaLink').href = lic.ctaUrl;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STEP NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+
+let currentStep = 1;
+const totalSteps = 6;
+
+function goToStep(step) {
+    if (step < 1 || step > 5) return;
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    currentStep = step;
+    document.getElementById(`step${currentStep}`).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+    const dots = document.querySelectorAll('.step-dot');
+    const fill = document.getElementById('progressFill');
+    dots.forEach((dot, i) => {
+        const s = i + 1;
+        dot.classList.remove('active', 'completed');
+        if (s < currentStep) dot.classList.add('completed');
+        else if (s === currentStep) dot.classList.add('active');
+    });
+    fill.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
+}
+
+function toggleItemized() {
+    const type = document.getElementById('deductionType').value;
+    document.getElementById('itemizedSection').style.display = type === 'itemized' ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 2026 TAX CALCULATION ENGINE
+// Updated per IRS Revenue Procedure 2025-32 & OBBBA
+// ═══════════════════════════════════════════════════════════════
+
+const TAX_DATA_2026 = {
+    brackets: {
+        single: [
+            { min: 0, max: 12400, rate: 0.10 },
+            { min: 12400, max: 50400, rate: 0.12 },
+            { min: 50400, max: 105700, rate: 0.22 },
+            { min: 105700, max: 201775, rate: 0.24 },
+            { min: 201775, max: 256225, rate: 0.32 },
+            { min: 256225, max: 640600, rate: 0.35 },
+            { min: 640600, max: Infinity, rate: 0.37 }
+        ],
+        married_joint: [
+            { min: 0, max: 24800, rate: 0.10 },
+            { min: 24800, max: 100800, rate: 0.12 },
+            { min: 100800, max: 211400, rate: 0.22 },
+            { min: 211400, max: 403550, rate: 0.24 },
+            { min: 403550, max: 512450, rate: 0.32 },
+            { min: 512450, max: 768700, rate: 0.35 },
+            { min: 768700, max: Infinity, rate: 0.37 }
+        ],
+        married_separate: [
+            { min: 0, max: 12400, rate: 0.10 },
+            { min: 12400, max: 50400, rate: 0.12 },
+            { min: 50400, max: 105700, rate: 0.22 },
+            { min: 105700, max: 201775, rate: 0.24 },
+            { min: 201775, max: 256225, rate: 0.32 },
+            { min: 256225, max: 384350, rate: 0.35 },
+            { min: 384350, max: Infinity, rate: 0.37 }
+        ],
+        head_household: [
+            { min: 0, max: 17700, rate: 0.10 },
+            { min: 17700, max: 67450, rate: 0.12 },
+            { min: 67450, max: 105700, rate: 0.22 },
+            { min: 105700, max: 201775, rate: 0.24 },
+            { min: 201775, max: 256200, rate: 0.32 },
+            { min: 256200, max: 640600, rate: 0.35 },
+            { min: 640600, max: Infinity, rate: 0.37 }
+        ]
+    },
+    standardDeduction: {
+        single: 16100,
+        married_joint: 32200,
+        married_separate: 16100,
+        head_household: 24150
+    },
+    seniorAdditionalStd: {
+        single_senior: 2050,
+        one_spouse: 1650,
+        both_spouses: 3300
+    },
+    seniorOBBBADeduction: 6000, // phases out at 6% above $75k (single) / $150k (joint)
+    seniorOBBBAPhaseout: {
+        single: 75000,
+        married_joint: 150000,
+        married_separate: 75000,
+        head_household: 75000
+    },
+    childTaxCredit: 2200,     // per qualifying child under 17
+    otherDependentCredit: 500, // per other dependent
+    ctcPhaseout: { single: 200000, married_joint: 400000, married_separate: 200000, head_household: 200000 },
+    ctcPhaseoutRate: 0.05,     // $50 per $1,000 over threshold
+    selfEmploymentTaxRate: 0.153, // 15.3% (12.4% SS + 2.9% Medicare)
+    ssTaxRate: 0.124,
+    medicareTaxRate: 0.029,
+    ssWageBase: 184500,
+    seAdjustmentFactor: 0.9235,
+    additionalMedicareTax: 0.009,
+    additionalMedicareThreshold: { single: 200000, married_joint: 250000, married_separate: 125000, head_household: 200000 },
+    quarterlyDueDates: [
+        { quarter: 'Q1', date: 'April 15, 2026', period: 'Jan 1 – Mar 31, 2026', deadline: new Date('2026-04-15') },
+        { quarter: 'Q2', date: 'June 15, 2026', period: 'Apr 1 – May 31, 2026', deadline: new Date('2026-06-15') },
+        { quarter: 'Q3', date: 'September 15, 2026', period: 'Jun 1 – Aug 31, 2026', deadline: new Date('2026-09-15') },
+        { quarter: 'Q4', date: 'January 15, 2027', period: 'Sep 1 – Dec 31, 2026', deadline: new Date('2027-01-15') }
+    ]
+};
+
+function parseNum(id) {
+    return parseFloat(document.getElementById(id).value.replace(/[^0-9.-]/g, '')) || 0;
+}
+
+function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+}
+
+function calculateTax() {
+    const filing = document.getElementById('filingStatus').value;
+    const w2 = parseNum('w2Wages');
+    const se = parseNum('selfEmployment');
+    const bizExp = parseNum('bizExpenses');
+    const other = parseNum('otherIncome');
+    const isSenior = document.getElementById('isSenior').value;
+
+    // Net Self-Employment Income
+    const netSE = Math.max(0, se - bizExp);
+
+    // Self-Employment Tax
+    const seTaxableIncome = netSE * TAX_DATA_2026.seAdjustmentFactor;
+    const ssSETax = Math.min(seTaxableIncome, Math.max(0, TAX_DATA_2026.ssWageBase - w2)) * TAX_DATA_2026.ssTaxRate;
+    const medicareSETax = seTaxableIncome * TAX_DATA_2026.medicareTaxRate;
+    const selfEmploymentTax = ssSETax + medicareSETax;
+    const deductibleSETax = selfEmploymentTax / 2;
+
+    // Additional Medicare Tax on SE income
+    const addMedThreshold = TAX_DATA_2026.additionalMedicareThreshold[filing] || 200000;
+    const totalEarnedForMedicare = w2 + seTaxableIncome;
+    const addMedicareTax = Math.max(0, totalEarnedForMedicare - addMedThreshold) * TAX_DATA_2026.additionalMedicareTax;
+
+    // Gross Income & AGI
+    const grossIncome = w2 + netSE + other;
+    const agi = grossIncome - deductibleSETax;
+
+    // Deductions
+    let deduction = 0;
+    const deductionType = document.getElementById('deductionType').value;
+    if (deductionType === 'standard') {
+        deduction = TAX_DATA_2026.standardDeduction[filing];
+        // Senior additional standard deduction
+        if (isSenior !== 'no') {
+            deduction += TAX_DATA_2026.seniorAdditionalStd[isSenior] || 0;
         }
-
-        // ============================================================
-        // Child Tax Credit with Phase-Out (2025)
-        // ============================================================
-        let ctcTotal = children * 2200;
-        
-        // CTC Phase-Out (starts at $200k Single/HOH, $400k MFJ)
-        const ctcPhaseOutThresholds = {single: 200000, married: 400000, marriedSep: 200000, hoh: 200000};
-        const phaseOutThreshold = ctcPhaseOutThresholds[filingStatus];
-        if (agi > phaseOutThreshold) {
-            const excessIncome = agi - phaseOutThreshold;
-            const phaseOutAmount = Math.ceil(excessIncome / 1000) * 50;
-            ctcTotal = Math.max(0, ctcTotal - phaseOutAmount);
-        }
-        
-        const ctcNonRef = Math.min(ctcTotal, tax);
-        
-        // Additional Child Tax Credit (ACTC) - Refundable Portion
-        const remainingCTC = ctcTotal - ctcNonRef;
-        const actcFormula = Math.max(0, (totalWages - 2500) * 0.15);
-        const actcPerChildLimit = children * 1700;  // $1,700 max per child (CRITICAL LIMIT)
-        const actc = Math.min(remainingCTC, actcFormula, actcPerChildLimit);
-
-        // ============================================================
-        // Earned Income Tax Credit (EITC) with Proper Phase-Out (2025)
-        // ============================================================
-        const eitcParams = {
-            0: {max: 649, phaseInRate: 0.0765, phaseInLimit: 8490, 
-                phaseOutStart: {single: 11440, married: 18210}, 
-                phaseOutEnd: {single: 18591, married: 25361}},
-            1: {max: 4328, phaseInRate: 0.34, phaseInLimit: 12730, 
-                phaseOutStart: {single: 24590, married: 31360}, 
-                phaseOutEnd: {single: 49084, married: 55854}},
-            2: {max: 7152, phaseInRate: 0.40, phaseInLimit: 17880, 
-                phaseOutStart: {single: 24590, married: 31360}, 
-                phaseOutEnd: {single: 55768, married: 62538}},
-            3: {max: 8046, phaseInRate: 0.45, phaseInLimit: 17880, 
-                phaseOutStart: {single: 24590, married: 31360}, 
-                phaseOutEnd: {single: 59899, married: 66669}}
-        };
-        
-        const eitcChildrenCount = Math.min(eitcChildren, 3);
-        const params = eitcParams[eitcChildrenCount];
-        const filingType = (filingStatus === 'married') ? 'married' : 'single';
-        const incomeForEITC = Math.max(agi, totalWages);  // Use greater of AGI or earned income
-        
-        let eitc = 0;
-        if (incomeForEITC <= params.phaseOutEnd[filingType]) {
-            if (incomeForEITC <= params.phaseInLimit) {
-                // Phase-in region
-                eitc = incomeForEITC * params.phaseInRate;
-            } else if (incomeForEITC <= params.phaseOutStart[filingType]) {
-                // Plateau region (full credit)
-                eitc = params.max;
-            } else {
-                // Phase-out region
-                const phaseOutIncome = incomeForEITC - params.phaseOutStart[filingType];
-                const phaseOutRange = params.phaseOutEnd[filingType] - params.phaseOutStart[filingType];
-                const phaseOutRate = params.max / phaseOutRange;
-                eitc = Math.max(0, params.max - (phaseOutIncome * phaseOutRate));
-            }
-            eitc = Math.min(eitc, params.max);
-        }
-
-        const taxAfterCredits = Math.max(0, tax - ctcNonRef);
-        const totalTax = taxAfterCredits + seTax;  // Add SE tax to total tax
-        const totalRefundableCredits = actc + eitc;
-        const totalPayments = federalWithholding + spouseFederalWithholding + estimatedPayments;
-        const refund = totalPayments + totalRefundableCredits - totalTax;
-
-        lastCalc = {leadData, results: {agi, deduction, taxableIncome, tax, seTax, ctcNonRef, actc, eitc, totalRefundableCredits, taxAfterCredits, totalTax, totalPayments, refund}};
-
-        const captured = await captureLead(leadData);
-        
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-
-        if (!captured) return;
-
-        displayResults(lastCalc.results);
+    } else {
+        const salt = Math.min(parseNum('saltDeduction'), 40000); // SALT cap increased under OBBBA
+        const mortgage = parseNum('mortgageInterest');
+        const charity = parseNum('charitableContrib');
+        const medical = Math.max(0, parseNum('medicalExpenses') - agi * 0.075);
+        const otherItem = parseNum('otherItemized');
+        deduction = salt + mortgage + charity + medical + otherItem;
     }
 
-    function displayResults(d) {
-        const seTaxLine = d.seTax > 0 ? `<div class="breakdown-item"><span class="breakdown-label">Self-Employment Tax</span><span class="breakdown-value">$${d.seTax.toLocaleString()}</span></div>` : '';
-        const html = `
-            <div class="results-grid">
-                <div class="result-card"><div class="result-label">AGI</div><div class="result-value">$${d.agi.toLocaleString()}</div></div>
-                <div class="result-card"><div class="result-label">Deduction</div><div class="result-value">$${d.deduction.toLocaleString()}</div></div>
-                <div class="result-card"><div class="result-label">Taxable</div><div class="result-value">$${d.taxableIncome.toLocaleString()}</div></div>
-                <div class="result-card"><div class="result-label">Income Tax</div><div class="result-value">$${d.tax.toLocaleString()}</div></div>
-            </div>
-            <div class="refund-display ${d.refund >= 0 ? '' : 'owe'}">
-                <div class="refund-label">${d.refund >= 0 ? 'ESTIMATED REFUND' : 'ESTIMATED TAX DUE'}</div>
-                <div class="refund-amount">$${Math.abs(d.refund).toLocaleString()}</div>
-            </div>
-            <div class="breakdown">
-                <div class="breakdown-item"><span class="breakdown-label">Income Tax (before credits)</span><span class="breakdown-value">$${d.tax.toLocaleString()}</span></div>
-                ${seTaxLine}
-                <div class="breakdown-item"><span class="breakdown-label">CTC (non-refundable)</span><span class="breakdown-value">$${d.ctcNonRef.toLocaleString()}</span></div>
-                <div class="breakdown-item"><span class="breakdown-label">ACTC (refundable)</span><span class="breakdown-value">$${d.actc.toLocaleString()}</span></div>
-                <div class="breakdown-item"><span class="breakdown-label">EITC (refundable)</span><span class="breakdown-value">$${d.eitc.toLocaleString()}</span></div>
-                <div class="breakdown-item"><span class="breakdown-label">Total refundable credits</span><span class="breakdown-value">$${d.totalRefundableCredits.toLocaleString()}</span></div>
-                <div class="breakdown-item"><span class="breakdown-label">Tax after credits</span><span class="breakdown-value">$${d.totalTax.toLocaleString()}</span></div>
-                <div class="breakdown-item" style="border-bottom: 2px solid #111827;"><span class="breakdown-label">Total payments</span><span class="breakdown-value">$${d.totalPayments.toLocaleString()}</span></div>
-            </div>
-        `;
-        document.getElementById('resultsContent').innerHTML = html;
+    // Senior OBBBA Deduction ($6,000 per qualifying senior, phases out at 6%)
+    let seniorOBBBA = 0;
+    if (isSenior !== 'no') {
+        const seniorCount = isSenior === 'both_spouses' ? 2 : 1;
+        const phaseoutStart = TAX_DATA_2026.seniorOBBBAPhaseout[filing];
+        const excessIncome = Math.max(0, agi - phaseoutStart);
+        const reduction = excessIncome * 0.06;
+        seniorOBBBA = Math.max(0, (TAX_DATA_2026.seniorOBBBADeduction * seniorCount) - reduction);
     }
 
-    function resetForm() {
-        document.getElementById('taxForm').reset();
-        children = 0;
-        document.getElementById('childrenValue').textContent = '0';
-        document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
-        document.querySelector('.radio-option').classList.add('selected');
-        document.getElementById('successMessage').style.display = 'none';
-        document.getElementById('resultsContent').innerHTML = '<div class="placeholder"><svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg><p>Enter your numbers and tap Estimate.</p></div>';
-    }
+    // Taxable Income
+    const taxableIncome = Math.max(0, agi - deduction - seniorOBBBA);
 
-    function downloadPDF() {
-        if (!lastCalc) { alert('Please calculate first'); return; }
-        
-        const {jsPDF} = window.jspdf;
-        const doc = new jsPDF();
-        const c = lastCalc;
-        const clientName = SecureLicense.getClient();
-        const branding = SecureLicense.getBranding();
-        
-        let primaryRgb = {r: 102, g: 126, b: 234};
-        if (branding && branding.estimateButtonBg) {
-            const rgb = SecureLicense.hexToRgb(branding.estimateButtonBg);
-            if (rgb) primaryRgb = rgb;
+    // Federal Income Tax (marginal brackets)
+    const brackets = TAX_DATA_2026.brackets[filing];
+    let federalTax = 0;
+    for (const b of brackets) {
+        if (taxableIncome > b.min) {
+            const taxable = Math.min(taxableIncome, b.max) - b.min;
+            federalTax += taxable * b.rate;
         }
-        
-        doc.setFillColor(26, 26, 26);
-        doc.rect(0, 0, 210, 50, 'F');
-        
-        doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-        doc.setFontSize(16);
-        doc.setFont(undefined, 'bold');
-        doc.text(clientName, 105, 15, {align: 'center'});
-        
-        doc.setFontSize(22);
-        doc.text('Tax Refund Estimate', 105, 28, {align: 'center'});
-        
-        doc.setFontSize(11);
-        doc.setFont(undefined, 'normal');
-        doc.text('2025 Federal Tax Calculation', 105, 38, {align: 'center'});
-        
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        let y = 65;
-        doc.text(`Name: ${c.leadData.fullName}`, 20, y); y += 7;
-        doc.text(`Email: ${c.leadData.email}`, 20, y); y += 7;
-        doc.text(`Phone: ${c.leadData.phone}`, 20, y); y += 7;
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
-        
-        y = 105;
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-        doc.text('Tax Calculation Results', 20, y); y += 10;
-        
-        doc.setFontSize(11);
-        doc.setFont(undefined, 'normal');
-        doc.setTextColor(0, 0, 0);
-        
-        const results = [
-            ['Adjusted Gross Income (AGI)', `$${c.results.agi.toLocaleString()}`],
-            ['Standard/Itemized Deduction', `$${c.results.deduction.toLocaleString()}`],
-            ['Taxable Income', `$${c.results.taxableIncome.toLocaleString()}`],
-            ['Tax Before Credits', `$${c.results.tax.toLocaleString()}`],
-            ['Child Tax Credit', `$${c.results.ctcNonRef.toLocaleString()}`],
-            ['Additional Child Tax Credit', `$${c.results.actc.toLocaleString()}`],
-            ['Earned Income Tax Credit', `$${c.results.eitc.toLocaleString()}`],
-            ['Total Payments', `$${c.results.totalPayments.toLocaleString()}`]
-        ];
-        
-        results.forEach(([label, value]) => {
-            doc.text(label, 20, y);
-            doc.text(value, 190, y, {align: 'right'});
-            y += 8;
+    }
+
+    // Credits
+    const numChildren = parseInt(document.getElementById('numChildren').value) || 0;
+    const numOtherDep = parseInt(document.getElementById('numOtherDependents').value) || 0;
+    const otherCredits = parseNum('otherCredits');
+
+    // Child Tax Credit with phaseout
+    const ctcThreshold = TAX_DATA_2026.ctcPhaseout[filing];
+    let ctc = numChildren * TAX_DATA_2026.childTaxCredit;
+    let odc = numOtherDep * TAX_DATA_2026.otherDependentCredit;
+    if (agi > ctcThreshold) {
+        const reduction = Math.ceil((agi - ctcThreshold) / 1000) * 50;
+        const totalDepCredits = ctc + odc;
+        const reduced = Math.max(0, totalDepCredits - reduction);
+        const ratio = totalDepCredits > 0 ? reduced / totalDepCredits : 0;
+        ctc = Math.round(ctc * ratio);
+        odc = Math.round(odc * ratio);
+    }
+
+    const totalCredits = ctc + odc + otherCredits;
+
+    // Net Federal Income Tax
+    const netFederalTax = Math.max(0, federalTax - totalCredits);
+
+    // Total Tax Liability
+    const totalTax = netFederalTax + selfEmploymentTax + addMedicareTax;
+
+    // Payments & Withholding
+    const withholding = parseNum('federalWithholding');
+    const estimatedPaid = parseNum('estimatedPaid');
+    const totalPayments = withholding + estimatedPaid;
+
+    // Remaining Tax Due
+    const remainingTax = Math.max(0, totalTax - totalPayments);
+    const quarterlyPayment = Math.ceil(remainingTax / 4);
+
+    // Safe Harbor Analysis
+    const priorYearTax = parseNum('priorYearTax');
+    const safeHarbor100 = priorYearTax;
+    const safeHarbor110 = priorYearTax * 1.1;
+    const safeHarborCurrent90 = totalTax * 0.9;
+    const safeHarborThreshold = agi > 150000 ? safeHarbor110 : safeHarbor100;
+    const meetsCurrentYear = totalPayments + remainingTax >= safeHarborCurrent90;
+    const meetsPriorYear = (totalPayments + remainingTax) >= safeHarborThreshold;
+
+    // Effective tax rate
+    const effectiveRate = grossIncome > 0 ? ((totalTax / grossIncome) * 100).toFixed(1) : '0.0';
+
+    return {
+        filing, grossIncome, netSE, agi, taxableIncome,
+        deduction, deductionType, seniorOBBBA,
+        federalTax, selfEmploymentTax, addMedicareTax, deductibleSETax,
+        ctc, odc, otherCredits, totalCredits,
+        netFederalTax, totalTax,
+        withholding, estimatedPaid, totalPayments,
+        remainingTax, quarterlyPayment, effectiveRate,
+        priorYearTax, safeHarbor100, safeHarbor110, safeHarborCurrent90,
+        safeHarborThreshold, meetsCurrentYear, meetsPriorYear,
+        numChildren, numOtherDep,
+        w2, se: netSE, other, bizExp
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DISPLAY RESULTS
+// ═══════════════════════════════════════════════════════════════
+
+function calculateAndShow() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!firstName || !email) {
+        alert('Please enter at least your first name and email address.');
+        return;
+    }
+
+    calcResults = calculateTax();
+    const r = calcResults;
+
+    // Update progress to results step
+    document.querySelectorAll('.form-card').forEach(c => c.classList.remove('active'));
+    const dots = document.querySelectorAll('.step-dot');
+    dots.forEach(d => d.classList.add('completed'));
+    dots[dots.length - 1].classList.remove('completed');
+    dots[dots.length - 1].classList.add('active');
+    document.getElementById('progressFill').style.width = '100%';
+
+    // Hero
+    document.getElementById('quarterlyAmount').textContent = fmt(r.quarterlyPayment);
+    document.getElementById('totalTaxStat').textContent = fmt(r.totalTax);
+    document.getElementById('paidStat').textContent = fmt(r.totalPayments);
+    document.getElementById('rateStat').textContent = r.effectiveRate + '%';
+
+    // Safe Harbor Alert
+    renderSafeHarborAlert(r);
+
+    // Payment Schedule
+    renderPaymentSchedule(r);
+
+    // Tax Breakdown
+    renderBreakdown(r);
+
+    // Tax Tips
+    renderTips(r);
+
+    // Show results
+    document.getElementById('resultsSection').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Send webhook
+    sendWebhook(r);
+}
+
+function renderSafeHarborAlert(r) {
+    const el = document.getElementById('safeHarborAlert');
+    let html = '';
+
+    if (r.remainingTax <= 0) {
+        html = `<div class="alert-box alert-success">
+            <div class="alert-icon">✅</div>
+            <div><div class="alert-title">No Estimated Payments Needed</div>
+            Your withholding and payments already cover your estimated tax liability. You may even be due a refund of ${fmt(Math.abs(r.totalTax - r.totalPayments))}!</div>
+        </div>`;
+    } else if (r.totalTax < 1000) {
+        html = `<div class="alert-box alert-success">
+            <div class="alert-icon">✅</div>
+            <div><div class="alert-title">Estimated Payments May Not Be Required</div>
+            Your total tax liability is under $1,000. The IRS generally doesn't require estimated payments in this case, but paying early can still be smart.</div>
+        </div>`;
+    } else {
+        // Check safe harbor
+        if (r.priorYearTax > 0) {
+            const needed = r.agi > 150000 ? r.safeHarbor110 : r.safeHarbor100;
+            const pct = r.agi > 150000 ? '110%' : '100%';
+            html += `<div class="alert-box alert-warning">
+                <div class="alert-icon">⚠️</div>
+                <div><div class="alert-title">Safe Harbor Rule</div>
+                To avoid underpayment penalties, you must pay at least <strong>90% of your 2026 tax (${fmt(r.safeHarborCurrent90)})</strong> OR <strong>${pct} of your 2025 tax (${fmt(needed)})</strong> — whichever is less. Your total planned payments: <strong>${fmt(r.totalPayments + r.remainingTax)}</strong>.</div>
+            </div>`;
+        }
+
+        if (r.quarterlyPayment > 0) {
+            html += `<div class="alert-box alert-info">
+                <div class="alert-icon">📌</div>
+                <div><div class="alert-title">Estimated Payments Required</div>
+                You should make quarterly payments of <strong>${fmt(r.quarterlyPayment)}</strong> to avoid penalties. Payments can be made via IRS Direct Pay, EFTPS, or by mail using Form 1040-ES vouchers.</div>
+            </div>`;
+        }
+    }
+
+    el.innerHTML = html;
+}
+
+function renderPaymentSchedule(r) {
+    const el = document.getElementById('paymentSchedule');
+    const today = new Date();
+    let html = '';
+
+    TAX_DATA_2026.quarterlyDueDates.forEach((q, i) => {
+        let statusClass = 'status-upcoming';
+        let statusText = '⏰ Upcoming';
+        const daysUntil = Math.ceil((q.deadline - today) / (1000 * 60 * 60 * 24));
+
+        if (daysUntil < 0) {
+            statusClass = 'status-past';
+            statusText = '⬜ Past Due';
+        } else if (daysUntil <= 30) {
+            statusClass = 'status-due-soon';
+            statusText = '🔴 Due Soon';
+        }
+
+        html += `<div class="schedule-item ${q.quarter.toLowerCase()}">
+            <div class="q-badge">${q.quarter}</div>
+            <div class="q-info">
+                <div class="q-date">${q.date}</div>
+                <div class="q-period">${q.period}</div>
+            </div>
+            <div class="q-amount">${fmt(r.quarterlyPayment)}</div>
+            <span class="q-status ${statusClass}">${statusText}</span>
+        </div>`;
+    });
+
+    el.innerHTML = html;
+}
+
+function renderBreakdown(r) {
+    const el = document.getElementById('taxBreakdown');
+    const filingLabels = {
+        single: 'Single', married_joint: 'Married Filing Jointly',
+        married_separate: 'Married Filing Separately', head_household: 'Head of Household'
+    };
+
+    el.innerHTML = `
+        <div class="breakdown-item"><span class="bd-label">Filing Status</span><span class="bd-value">${filingLabels[r.filing]}</span></div>
+        <div class="breakdown-item"><span class="bd-label">Gross Income</span><span class="bd-value">${fmt(r.grossIncome)}</span></div>
+        <div class="breakdown-item bd-deduct"><span class="bd-label">Deductible SE Tax (50%)</span><span class="bd-value">-${fmt(r.deductibleSETax)}</span></div>
+        <div class="breakdown-item"><span class="bd-label">Adjusted Gross Income (AGI)</span><span class="bd-value">${fmt(r.agi)}</span></div>
+        <div class="breakdown-item bd-deduct"><span class="bd-label">${r.deductionType === 'standard' ? 'Standard' : 'Itemized'} Deduction</span><span class="bd-value">-${fmt(r.deduction)}</span></div>
+        ${r.seniorOBBBA > 0 ? `<div class="breakdown-item bd-deduct"><span class="bd-label">Senior OBBBA Deduction</span><span class="bd-value">-${fmt(r.seniorOBBBA)}</span></div>` : ''}
+        <div class="breakdown-item"><span class="bd-label">Taxable Income</span><span class="bd-value">${fmt(r.taxableIncome)}</span></div>
+        <div class="breakdown-item" style="border-top:1px dashed #e2e8f0;padding-top:14px;margin-top:6px;"><span class="bd-label">Federal Income Tax</span><span class="bd-value">${fmt(r.federalTax)}</span></div>
+        <div class="breakdown-item"><span class="bd-label">Self-Employment Tax</span><span class="bd-value">${fmt(r.selfEmploymentTax)}</span></div>
+        ${r.addMedicareTax > 0 ? `<div class="breakdown-item"><span class="bd-label">Additional Medicare Tax (0.9%)</span><span class="bd-value">${fmt(r.addMedicareTax)}</span></div>` : ''}
+        ${r.totalCredits > 0 ? `<div class="breakdown-item bd-deduct"><span class="bd-label">Tax Credits (CTC: ${fmt(r.ctc)}${r.odc > 0 ? ', ODC: ' + fmt(r.odc) : ''}${r.otherCredits > 0 ? ', Other: ' + fmt(r.otherCredits) : ''})</span><span class="bd-value">-${fmt(r.totalCredits)}</span></div>` : ''}
+        <div class="breakdown-item bd-total"><span class="bd-label">Total Estimated Tax</span><span class="bd-value">${fmt(r.totalTax)}</span></div>
+        ${r.totalPayments > 0 ? `<div class="breakdown-item bd-deduct"><span class="bd-label">Withholding + Payments Made</span><span class="bd-value">-${fmt(r.totalPayments)}</span></div>` : ''}
+        <div class="breakdown-item bd-total"><span class="bd-label">Remaining Tax Due</span><span class="bd-value">${fmt(r.remainingTax)}</span></div>
+        <div class="breakdown-item bd-total"><span class="bd-label">Quarterly Payment (÷ 4)</span><span class="bd-value" style="font-size:22px;">${fmt(r.quarterlyPayment)}</span></div>
+    `;
+}
+
+function renderTips(r) {
+    const el = document.getElementById('taxTips');
+    let tips = [];
+
+    if (r.netSE > 50000) {
+        tips.push({ icon: '🏢', text: '<strong>Consider S-Corp Election:</strong> At your self-employment income level, electing S-Corp status could save you $5,000–$8,000+ annually in self-employment taxes by splitting income between salary and distributions.' });
+    }
+    if (r.netSE > 0) {
+        tips.push({ icon: '💰', text: '<strong>Maximize Business Deductions:</strong> Home office, vehicle expenses, health insurance premiums, and retirement contributions (SEP-IRA/Solo 401k) can significantly reduce your self-employment tax base.' });
+    }
+    tips.push({ icon: '🏦', text: '<strong>Retirement Contributions:</strong> Contributing to a Traditional IRA (up to $7,500 in 2026), SEP-IRA (up to 25% of net SE income), or Solo 401(k) reduces your taxable income dollar-for-dollar.' });
+
+    if (r.agi > 150000) {
+        tips.push({ icon: '⚠️', text: '<strong>110% Safe Harbor:</strong> Since your AGI exceeds $150,000, you must pay 110% of prior year tax (not just 100%) to avoid underpayment penalties under the safe harbor rule.' });
+    }
+    if (r.numChildren > 0) {
+        tips.push({ icon: '👶', text: `<strong>Child Tax Credit:</strong> You're claiming ${fmt(r.ctc)} in Child Tax Credits for 2026 ($2,200/child under the OBBBA). Up to $1,700 per child may be refundable.` });
+    }
+    tips.push({ icon: '📅', text: '<strong>Pay On Time:</strong> Set calendar reminders for each quarterly due date. Even a day late can trigger underpayment penalties that compound over time.' });
+    tips.push({ icon: '📊', text: '<strong>Annualize Income:</strong> If your income varies by quarter, use the IRS Annualized Income Installment Method (Form 2210, Schedule AI) to potentially lower early-quarter payments.' });
+
+    el.innerHTML = tips.map(t => `<div class="tip-item"><span class="tip-icon">${t.icon}</span><div>${t.text}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WEBHOOK & LEAD CAPTURE
+// ═══════════════════════════════════════════════════════════════
+
+async function sendWebhook(r) {
+    if (!licenseData || !licenseData.webhook) return;
+
+    const payload = {
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        name: `${document.getElementById('firstName').value.trim()} ${document.getElementById('lastName').value.trim()}`,
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        source: 'Quarterly Tax Calculator 2026',
+        client: licenseData.client || '',
+        // Calculation results
+        quarterlyPayment: r.quarterlyPayment,
+        totalTax: Math.round(r.totalTax),
+        remainingTaxDue: Math.round(r.remainingTax),
+        totalPaymentsMade: Math.round(r.totalPayments),
+        effectiveTaxRate: r.effectiveRate + '%',
+        grossIncome: Math.round(r.grossIncome),
+        selfEmploymentIncome: Math.round(r.netSE),
+        filingStatus: r.filing,
+        numChildren: r.numChildren,
+        federalTax: Math.round(r.federalTax),
+        selfEmploymentTax: Math.round(r.selfEmploymentTax),
+        totalCredits: Math.round(r.totalCredits),
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        await fetch(licenseData.webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            mode: 'no-cors'
         });
-        
-        y += 12;
-        const isRefund = c.results.refund >= 0;
-        doc.setFillColor(isRefund ? 16 : 239, isRefund ? 185 : 68, isRefund ? 129 : 68);
-        doc.rect(20, y - 5, 170, 25, 'F');
-        
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text(isRefund ? 'ESTIMATED REFUND' : 'ESTIMATED TAX DUE', 105, y + 3, {align: 'center'});
-        
-        doc.setFontSize(24);
-        doc.text(`$${Math.abs(c.results.refund).toLocaleString()}`, 105, y + 15, {align: 'center'});
-        
-        y += 35;
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(8);
-        doc.setFont(undefined, 'italic');
-        doc.text('This is an estimate only. Actual refund may differ based on complete tax return.', 105, y, {align: 'center'});
-        y += 5;
-        doc.text(`Prepared by ${clientName}`, 105, y, {align: 'center'});
-        
-        const fileName = `Tax-Estimate-${c.leadData.fullName.replace(/\s/g, '-')}.pdf`;
-        doc.save(fileName);
+    } catch (e) {
+        console.warn('Webhook error:', e);
     }
-    </script>
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PDF GENERATION
+// ═══════════════════════════════════════════════════════════════
+
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const r = calcResults;
+    const name = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+    const color = licenseData?.primaryColor || '#4f46e5';
+    const hex = color.replace('#', '');
+    const pr = parseInt(hex.substr(0,2),16);
+    const pg = parseInt(hex.substr(2,2),16);
+    const pb = parseInt(hex.substr(4,2),16);
+
+    let y = 20;
+
+    // Header bar
+    doc.setFillColor(pr, pg, pb);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('2026 Quarterly Estimated Tax Report', 14, 18);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Prepared for: ${name}`, 14, 28);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 34);
+    if (licenseData?.client) {
+        doc.text(`By: ${licenseData.client}`, 140, 34);
+    }
+
+    y = 52;
+    doc.setTextColor(30, 41, 59);
+
+    // Quarterly Payment Box
+    doc.setFillColor(pr, pg, pb);
+    doc.roundedRect(14, y, 182, 28, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.text('YOUR QUARTERLY ESTIMATED PAYMENT', 105, y + 10, { align: 'center' });
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text(fmt(r.quarterlyPayment), 105, y + 22, { align: 'center' });
+
+    y += 38;
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    // Summary stats
+    const stats = [
+        ['Total Estimated Tax:', fmt(r.totalTax)],
+        ['Withholding + Payments:', fmt(r.totalPayments)],
+        ['Remaining Tax Due:', fmt(r.remainingTax)],
+        ['Effective Tax Rate:', r.effectiveRate + '%'],
+    ];
+    stats.forEach(s => {
+        doc.text(s[0], 18, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text(s[1], 100, y);
+        doc.setFont('helvetica', 'normal');
+        y += 7;
+    });
+
+    y += 6;
+
+    // Payment Schedule
+    doc.setFillColor(pr, pg, pb);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(14, y, 182, 8, 'F');
+    doc.text('2026 QUARTERLY PAYMENT SCHEDULE', 18, y + 6);
+    y += 14;
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Quarter', 18, y);
+    doc.text('Due Date', 55, y);
+    doc.text('Period', 105, y);
+    doc.text('Amount', 170, y);
+    y += 2;
+    doc.setDrawColor(200, 200, 200);
+    doc.line(14, y, 196, y);
+    y += 6;
+
+    doc.setFont('helvetica', 'normal');
+    TAX_DATA_2026.quarterlyDueDates.forEach(q => {
+        doc.text(q.quarter, 18, y);
+        doc.text(q.date, 55, y);
+        doc.text(q.period, 105, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text(fmt(r.quarterlyPayment), 170, y);
+        doc.setFont('helvetica', 'normal');
+        y += 7;
+    });
+
+    y += 6;
+
+    // Tax Breakdown
+    doc.setFillColor(pr, pg, pb);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(14, y, 182, 8, 'F');
+    doc.text('TAX BREAKDOWN', 18, y + 6);
+    y += 14;
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const breakdown = [
+        ['Gross Income', fmt(r.grossIncome)],
+        ['Adjusted Gross Income (AGI)', fmt(r.agi)],
+        [`${r.deductionType === 'standard' ? 'Standard' : 'Itemized'} Deduction`, '-' + fmt(r.deduction)],
+        ['Taxable Income', fmt(r.taxableIncome)],
+        ['Federal Income Tax', fmt(r.federalTax)],
+        ['Self-Employment Tax', fmt(r.selfEmploymentTax)],
+        ['Tax Credits', '-' + fmt(r.totalCredits)],
+        ['Total Estimated Tax', fmt(r.totalTax)],
+    ];
+    breakdown.forEach(b => {
+        doc.text(b[0], 18, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text(b[1], 170, y);
+        doc.setFont('helvetica', 'normal');
+        y += 7;
+    });
+
+    y += 6;
+
+    // Safe Harbor Note
+    doc.setFillColor(255, 251, 235);
+    doc.roundedRect(14, y, 182, 20, 2, 2, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(120, 80, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SAFE HARBOR REMINDER', 18, y + 7);
+    doc.setFont('helvetica', 'normal');
+    const shText = r.agi > 150000
+        ? 'Pay at least 90% of 2026 tax OR 110% of 2025 tax to avoid penalties.'
+        : 'Pay at least 90% of 2026 tax OR 100% of 2025 tax to avoid penalties.';
+    doc.text(shText, 18, y + 14);
+
+    y += 28;
+
+    // Disclaimer
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.text('DISCLAIMER: This report provides estimates for informational purposes only and should not be considered tax, legal, or financial advice.', 14, y);
+    doc.text('Based on 2026 IRS tax brackets, OBBBA provisions, and Revenue Procedure 2025-32. Consult a qualified tax professional.', 14, y + 4);
+
+    // CTA
+    if (licenseData?.ctaUrl && licenseData.ctaUrl !== '#') {
+        y += 12;
+        doc.setFillColor(pr, pg, pb);
+        doc.roundedRect(14, y, 182, 14, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text(licenseData.ctaText || 'Schedule a Tax Consultation', 105, y + 9, { align: 'center' });
+    }
+
+    doc.save(`Quarterly-Tax-Estimate-2026-${name.replace(/\s+/g, '-')}.pdf`);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+function startOver() {
+    document.getElementById('resultsSection').style.display = 'none';
+    currentStep = 1;
+    document.getElementById('step1').classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function shareResults() {
+    const r = calcResults;
+    const text = `My 2026 Quarterly Estimated Tax Payment: ${fmt(r.quarterlyPayment)}\n` +
+        `Total Tax: ${fmt(r.totalTax)} | Effective Rate: ${r.effectiveRate}%\n` +
+        `Calculated using the Quarterly Estimated Tax Calculator`;
+    if (navigator.share) {
+        navigator.share({ title: '2026 Quarterly Tax Estimate', text });
+    } else {
+        navigator.clipboard.writeText(text).then(() => alert('Results copied to clipboard!'));
+    }
+}
+
+// Format numbers on input
+document.querySelectorAll('input[inputmode="numeric"]').forEach(input => {
+    input.addEventListener('blur', function() {
+        const val = parseFloat(this.value.replace(/[^0-9.-]/g, ''));
+        if (!isNaN(val) && val > 0) {
+            this.value = val.toLocaleString('en-US');
+        }
+    });
+    input.addEventListener('focus', function() {
+        this.value = this.value.replace(/,/g, '');
+    });
+});
+</script>
+
 </body>
 </html>
