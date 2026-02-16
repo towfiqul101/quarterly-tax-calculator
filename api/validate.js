@@ -1,14 +1,69 @@
 // ═══════════════════════════════════════════════════════════════
 // LICENSE VALIDATION API - Quarterly Estimated Tax Calculator 2026
-// Fetches licenses from GitHub repo for zero-downtime client management
+// Tries GitHub first (main & master branches), falls back to embedded licenses
 // ═══════════════════════════════════════════════════════════════
 
-const GITHUB_LICENSES_URL = 'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/main/licenses.json';
+const GITHUB_URLS = [
+    'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/main/licenses.json',
+    'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/master/licenses.json'
+];
 
-// Cache licenses for 5 minutes to reduce GitHub API calls
+// Fallback licenses - used if GitHub is unreachable
+const FALLBACK_LICENSES = [
+    {
+        "key": "QETC-demo123xyz",
+        "client": "Demo Tax Services",
+        "domain": "demo.com",
+        "logo": "",
+        "primaryColor": "#4f46e5",
+        "webhook": "",
+        "ctaUrl": "#",
+        "ctaText": "📞 Schedule a Tax Consultation",
+        "expires": "2026-12-31",
+        "status": "active"
+    },
+    {
+        "key": "QETC-mcneal2026",
+        "client": "McNeal Tax & Associates",
+        "domain": "mcnealtax.com",
+        "logo": "",
+        "primaryColor": "#D4AF37",
+        "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        "ctaUrl": "https://mcnealtax.com/schedule",
+        "ctaText": "📞 Book Your Free Consultation",
+        "expires": "2026-12-31",
+        "status": "active"
+    },
+    {
+        "key": "QETC-swiftexpress2026",
+        "client": "Swift Express Tax",
+        "domain": "swiftexpresstax.com",
+        "logo": "",
+        "primaryColor": "#1e40af",
+        "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        "ctaUrl": "https://swiftexpresstax.com/file-today",
+        "ctaText": "📞 File Your Taxes Today",
+        "expires": "2026-12-31",
+        "status": "active"
+    },
+    {
+        "key": "QETC-dixon2026",
+        "client": "Dixon Financial",
+        "domain": "dixonfinancial.com",
+        "logo": "",
+        "primaryColor": "#047857",
+        "webhook": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+        "ctaUrl": "https://dixonfinancial.com/contact",
+        "ctaText": "📞 Get Expert Tax Help",
+        "expires": "2026-12-31",
+        "status": "active"
+    }
+];
+
+// Cache
 let licenseCache = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 async function fetchLicenses() {
     const now = Date.now();
@@ -16,28 +71,32 @@ async function fetchLicenses() {
         return licenseCache;
     }
 
-    try {
-        const response = await fetch(GITHUB_LICENSES_URL, {
-            headers: { 'Cache-Control': 'no-cache' }
-        });
-
-        if (!response.ok) {
-            throw new Error(`GitHub fetch failed: ${response.status}`);
+    // Try each GitHub URL
+    for (const url of GITHUB_URLS) {
+        try {
+            const response = await fetch(url, {
+                headers: { 'Cache-Control': 'no-cache' }
+            });
+            if (response.ok) {
+                const licenses = await response.json();
+                licenseCache = licenses;
+                cacheTimestamp = now;
+                console.log('Licenses loaded from GitHub:', url);
+                return licenses;
+            }
+        } catch (e) {
+            console.warn('Failed to fetch from:', url, e.message);
         }
-
-        const licenses = await response.json();
-        licenseCache = licenses;
-        cacheTimestamp = now;
-        return licenses;
-    } catch (error) {
-        console.error('Error fetching licenses:', error);
-        if (licenseCache) return licenseCache;
-        throw error;
     }
+
+    // Fallback to embedded licenses
+    console.warn('Using fallback embedded licenses');
+    licenseCache = FALLBACK_LICENSES;
+    cacheTimestamp = now;
+    return FALLBACK_LICENSES;
 }
 
 module.exports = async (req, res) => {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -66,7 +125,6 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Check if license is active
         if (license.status !== 'active') {
             return res.status(403).json({
                 valid: false,
@@ -74,7 +132,6 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Check expiration
         if (license.expires) {
             const expiryDate = new Date(license.expires);
             if (expiryDate < new Date()) {
@@ -85,7 +142,6 @@ module.exports = async (req, res) => {
             }
         }
 
-        // License is valid - return branding data
         return res.status(200).json({
             valid: true,
             license: {
