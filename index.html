@@ -818,7 +818,7 @@ const LICENSES = [
         webhook: "",
         ctaUrl: "#",
         ctaText: "📞 Schedule a Tax Consultation",
-        expires: "2026-12-31",
+        expires: "2027-12-31",
         status: "active"
     },
     {
@@ -830,7 +830,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://mcnealtax.com/schedule",
         ctaText: "📞 Book Your Free Consultation",
-        expires: "2026-12-31",
+        expires: "2027-12-31",
         status: "active"
     },
     {
@@ -842,7 +842,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://swiftexpresstax.com/file-today",
         ctaText: "📞 File Your Taxes Today",
-        expires: "2026-12-31",
+        expires: "2027-12-31",
         status: "active"
     },
     {
@@ -854,7 +854,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://dixonfinancial.com/contact",
         ctaText: "📞 Get Expert Tax Help",
-        expires: "2026-12-31",
+        expires: "2027-12-31",
         status: "active"
     }
 ];
@@ -900,12 +900,16 @@ function validateLicense(licenses, key) {
         return;
     }
 
-    // Try GitHub licenses first (for dynamic updates), fallback to embedded
-    let licenses = LICENSES;
-    const ghLicenses = await fetchGitHubLicenses();
-    if (ghLicenses) licenses = ghLicenses;
+    // Step 1: Check embedded licenses first (always up-to-date with deployment)
+    let result = validateLicense(LICENSES, key);
 
-    const result = validateLicense(licenses, key);
+    // Step 2: If not found in embedded, try GitHub for dynamically added clients
+    if (!result.valid) {
+        const ghLicenses = await fetchGitHubLicenses();
+        if (ghLicenses) {
+            result = validateLicense(ghLicenses, key);
+        }
+    }
 
     if (!result.valid) {
         showError(result.message);
