@@ -3,8 +3,7 @@
 // Fetches licenses from GitHub repo for zero-downtime client management
 // ═══════════════════════════════════════════════════════════════
 
-// ⚠️ IMPORTANT: Replace YOUR_GITHUB_USERNAME with your actual GitHub username
-const GITHUB_LICENSES_URL = 'https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/quarterly-tax-calculator-licenses/main/licenses.json';
+const GITHUB_LICENSES_URL = 'https://raw.githubusercontent.com/towfiqul101/quarterly-tax-calculator-licenses/main/licenses.json';
 
 // Cache licenses for 5 minutes to reduce GitHub API calls
 let licenseCache = null;
@@ -32,7 +31,6 @@ async function fetchLicenses() {
         return licenses;
     } catch (error) {
         console.error('Error fetching licenses:', error);
-        // Return cached data if available, even if stale
         if (licenseCache) return licenseCache;
         throw error;
     }
