@@ -1451,17 +1451,21 @@ function renderTips(r) {
 async function sendWebhook(r) {
     if (!licenseData || !licenseData.webhook || licenseData.webhook.includes('YOUR_WEBHOOK_ID')) {
         console.warn('⚠️ No webhook configured or placeholder detected');
-        showWebhookStatus(false, 'Webhook not configured');
         return;
     }
 
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
     const payload = {
-        // Contact Info
-        firstName: document.getElementById('firstName').value.trim(),
-        lastName: document.getElementById('lastName').value.trim(),
-        name: `${document.getElementById('firstName').value.trim()} ${document.getElementById('lastName').value.trim()}`,
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
+        // Contact Info — GHL standard fields
+        firstName: firstName,
+        lastName: lastName,
+        name: `${firstName} ${lastName}`.trim(),
+        email: email,
+        phone: phone,
         
         // Source Tracking
         source: 'Quarterly Tax Calculator 2026',
@@ -1475,27 +1479,16 @@ async function sendWebhook(r) {
         totalPaymentsMade: Math.round(r.totalPayments),
         effectiveTaxRate: r.effectiveRate + '%',
         grossIncome: Math.round(r.grossIncome),
-        w2Wages: Math.round(r.w2),
         selfEmploymentIncome: Math.round(r.netSE),
-        otherIncome: Math.round(r.other),
         adjustedGrossIncome: Math.round(r.agi),
         taxableIncome: Math.round(r.taxableIncome),
         filingStatus: r.filing,
         deductionType: r.deductionType,
         deductionAmount: Math.round(r.deduction),
-        
-        // Tax Components
         federalIncomeTax: Math.round(r.federalTax),
         selfEmploymentTax: Math.round(r.selfEmploymentTax),
-        additionalMedicareTax: Math.round(r.addMedicareTax),
-        
-        // Credits
-        childTaxCredit: Math.round(r.ctc),
-        otherDependentCredit: Math.round(r.odc),
-        otherCredits: Math.round(r.otherCredits),
         totalCredits: Math.round(r.totalCredits),
         numChildren: r.numChildren,
-        numOtherDependents: r.numOtherDep,
         
         // Payment Schedule
         q1_due: 'April 15, 2026',
@@ -1503,19 +1496,15 @@ async function sendWebhook(r) {
         q3_due: 'September 15, 2026',
         q4_due: 'January 15, 2027',
         q1_amount: r.quarterlyPayment,
-        q2_amount: r.quarterlyPayment,
-        q3_amount: r.quarterlyPayment,
-        q4_amount: r.quarterlyPayment,
-        
-        // Safe Harbor
-        priorYearTax: Math.round(r.priorYearTax),
-        safeHarborRequired: r.agi > 150000 ? '110% of prior year' : '100% of prior year',
         
         // Metadata
-        timestamp: new Date().toISOString(),
-        calculatorVersion: '2026-v1'
+        timestamp: new Date().toISOString()
     };
 
+    console.log('📤 Sending webhook to:', licenseData.webhook);
+    console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+
+    // Send as JSON
     try {
         await fetch(licenseData.webhook, {
             method: 'POST',
@@ -1523,11 +1512,24 @@ async function sendWebhook(r) {
             body: JSON.stringify(payload),
             mode: 'no-cors'
         });
-        console.log('✅ Webhook sent successfully');
-        showWebhookStatus(true, 'Lead data sent to CRM');
+        console.log('✅ Webhook sent (JSON)');
     } catch (e) {
-        console.warn('❌ Webhook error:', e);
-        showWebhookStatus(false, 'Failed to send lead data');
+        console.warn('❌ JSON webhook failed:', e);
+    }
+
+    // Also send as form-urlencoded (GHL sometimes prefers this)
+    try {
+        const formData = new URLSearchParams();
+        Object.entries(payload).forEach(([k, v]) => formData.append(k, String(v)));
+        await fetch(licenseData.webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString(),
+            mode: 'no-cors'
+        });
+        console.log('✅ Webhook sent (form-urlencoded)');
+    } catch (e) {
+        console.warn('❌ Form webhook failed:', e);
     }
 }
 
