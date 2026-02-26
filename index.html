@@ -974,9 +974,49 @@ function applyBranding(lic) {
     if (lic.ctaUrl) {
         document.getElementById('ctaLink').href = lic.ctaUrl;
     }
-    if (lic.footerText) {
-        document.getElementById('calcFooter').innerHTML = lic.footerText + '<br><br><span id="poweredBy" style="opacity:0.5;">Powered by Quarterly Tax Calculator</span>';
+
+    // ── Footer Customization ──
+    // URL params override embedded values: &footer_text=, &footer_phone=, &footer_email=
+    const params = new URLSearchParams(window.location.search);
+    const clientName = lic.client || 'your tax professional';
+    const ctaUrl = lic.ctaUrl || '#';
+
+    // Custom footer text from URL param or license
+    const customFooterText = params.get('footer_text');
+    const customPhone = params.get('footer_phone');
+    const customEmail = params.get('footer_email');
+
+    // Build the disclaimer with clickable company name
+    let disclaimerText = '';
+    if (customFooterText) {
+        disclaimerText = customFooterText;
+    } else if (lic.footerText) {
+        disclaimerText = lic.footerText;
+    } else {
+        disclaimerText = `<strong>Disclaimer:</strong> This calculator provides estimates for informational purposes only and should not be considered tax, legal, or financial advice. For personalized tax planning and professional guidance, consult with <a href="${ctaUrl}" target="_blank" style="color:${color};font-weight:600;text-decoration:underline;">${clientName}</a>.<br>Based on 2026 IRS tax brackets and current federal tax law.`;
     }
+
+    // Replace company name in footerText with clickable link (if footerText was set but doesn't have <a> tag)
+    if (disclaimerText.includes(clientName) && !disclaimerText.includes('<a ')) {
+        disclaimerText = disclaimerText.replace(
+            clientName,
+            `<a href="${ctaUrl}" target="_blank" style="color:${color};font-weight:600;text-decoration:underline;">${clientName}</a>`
+        );
+    }
+
+    // Add phone & email if provided via URL params
+    let contactLine = '';
+    if (customPhone || customEmail) {
+        contactLine = '<br>';
+        if (customPhone) contactLine += `📞 <a href="tel:${customPhone.replace(/[^0-9+]/g,'')}" style="color:${color};font-weight:600;">${customPhone}</a>`;
+        if (customPhone && customEmail) contactLine += ' &nbsp;·&nbsp; ';
+        if (customEmail) contactLine += `✉️ <a href="mailto:${customEmail}" style="color:${color};font-weight:600;">${customEmail}</a>`;
+    }
+
+    // Powered by
+    const poweredBy = `<br><br><span style="opacity:0.45;font-size:10px;">Powered by <a href="mailto:Towfiqul.funnels@gmail.com" style="color:inherit;text-decoration:underline;">Towfiqul.funnels@gmail.com</a></span>`;
+
+    document.getElementById('calcFooter').innerHTML = disclaimerText + contactLine + poweredBy;
 }
 
 // ═══════════════════════════════════════════════════════════════
