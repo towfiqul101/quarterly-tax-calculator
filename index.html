@@ -839,9 +839,9 @@ const LICENSES = [
         client: "Swift Express Tax",
         domain: "swiftexpresstax.com",
         logo: "",
-        primaryColor: "#1e40af",
-        webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
-        ctaUrl: "https://swiftexpresstax.com/file-today",
+        primaryColor: "#1e3a5f",
+        webhook: "https://services.leadconnectorhq.com/hooks/GElR6TDzWPRNgaNTWroH/webhook-trigger/980d8ffa-0e9c-4336-83bb-80bba1d645c1",
+        ctaUrl: "https://www.swiftexpresstax.com/file-today",
         ctaText: "📞 File Your Taxes Today",
         expires: "2027-12-31",
         status: "active"
@@ -855,6 +855,30 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://dixonfinancial.com/contact",
         ctaText: "📞 Get Expert Tax Help",
+        expires: "2027-12-31",
+        status: "active"
+    },
+    {
+        key: "QETC-tanksley2026",
+        client: "Tanksleys Financial Group Services",
+        domain: "tanksleysfinancial.com",
+        logo: "",
+        primaryColor: "#047857",
+        webhook: "https://services.leadconnectorhq.com/hooks/5EBX8edQSVZYRxhd5KMc/webhook-trigger/1604d0d6-be27-438e-b618-b2ff47ac6e94",
+        ctaUrl: "https://api.leadconnectorhq.com/widget/bookings/ttxtaxproblems",
+        ctaText: "📞 Book Your Free Tax Consultation",
+        expires: "2027-12-31",
+        status: "active"
+    },
+    {
+        key: "QETC-tanksley2026",
+        client: "Tanksleys Financial Group Services",
+        domain: "tanksleystaxexpress.com",
+        logo: "",
+        primaryColor: "#159F25",
+        webhook: "https://services.leadconnectorhq.com/hooks/5EBX8edQSVZYRxhd5KMc/webhook-trigger/59439604-2bd0-4407-ac37-10caa41091f6",
+        ctaUrl: "https://link.apisystem.tech/widget/form/papYou47VFQPSnZJpaLz",
+        ctaText: "📞 Start My Tax Intake Now",
         expires: "2027-12-31",
         status: "active"
     }
@@ -1389,30 +1413,71 @@ function renderTips(r) {
 // ═══════════════════════════════════════════════════════════════
 
 async function sendWebhook(r) {
-    if (!licenseData || !licenseData.webhook) return;
+    if (!licenseData || !licenseData.webhook || licenseData.webhook.includes('YOUR_WEBHOOK_ID')) {
+        console.warn('⚠️ No webhook configured or placeholder detected');
+        showWebhookStatus(false, 'Webhook not configured');
+        return;
+    }
 
     const payload = {
+        // Contact Info
         firstName: document.getElementById('firstName').value.trim(),
         lastName: document.getElementById('lastName').value.trim(),
         name: `${document.getElementById('firstName').value.trim()} ${document.getElementById('lastName').value.trim()}`,
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
+        
+        // Source Tracking
         source: 'Quarterly Tax Calculator 2026',
         client: licenseData.client || '',
-        // Calculation results
+        calculator_type: 'quarterly_estimated_tax',
+        
+        // Calculation Results
         quarterlyPayment: r.quarterlyPayment,
         totalTax: Math.round(r.totalTax),
         remainingTaxDue: Math.round(r.remainingTax),
         totalPaymentsMade: Math.round(r.totalPayments),
         effectiveTaxRate: r.effectiveRate + '%',
         grossIncome: Math.round(r.grossIncome),
+        w2Wages: Math.round(r.w2),
         selfEmploymentIncome: Math.round(r.netSE),
+        otherIncome: Math.round(r.other),
+        adjustedGrossIncome: Math.round(r.agi),
+        taxableIncome: Math.round(r.taxableIncome),
         filingStatus: r.filing,
-        numChildren: r.numChildren,
-        federalTax: Math.round(r.federalTax),
+        deductionType: r.deductionType,
+        deductionAmount: Math.round(r.deduction),
+        
+        // Tax Components
+        federalIncomeTax: Math.round(r.federalTax),
         selfEmploymentTax: Math.round(r.selfEmploymentTax),
+        additionalMedicareTax: Math.round(r.addMedicareTax),
+        
+        // Credits
+        childTaxCredit: Math.round(r.ctc),
+        otherDependentCredit: Math.round(r.odc),
+        otherCredits: Math.round(r.otherCredits),
         totalCredits: Math.round(r.totalCredits),
-        timestamp: new Date().toISOString()
+        numChildren: r.numChildren,
+        numOtherDependents: r.numOtherDep,
+        
+        // Payment Schedule
+        q1_due: 'April 15, 2026',
+        q2_due: 'June 15, 2026',
+        q3_due: 'September 15, 2026',
+        q4_due: 'January 15, 2027',
+        q1_amount: r.quarterlyPayment,
+        q2_amount: r.quarterlyPayment,
+        q3_amount: r.quarterlyPayment,
+        q4_amount: r.quarterlyPayment,
+        
+        // Safe Harbor
+        priorYearTax: Math.round(r.priorYearTax),
+        safeHarborRequired: r.agi > 150000 ? '110% of prior year' : '100% of prior year',
+        
+        // Metadata
+        timestamp: new Date().toISOString(),
+        calculatorVersion: '2026-v1'
     };
 
     try {
@@ -1422,9 +1487,31 @@ async function sendWebhook(r) {
             body: JSON.stringify(payload),
             mode: 'no-cors'
         });
+        console.log('✅ Webhook sent successfully');
+        showWebhookStatus(true, 'Lead data sent to CRM');
     } catch (e) {
-        console.warn('Webhook error:', e);
+        console.warn('❌ Webhook error:', e);
+        showWebhookStatus(false, 'Failed to send lead data');
     }
+}
+
+function showWebhookStatus(success, message) {
+    const existing = document.getElementById('webhookStatus');
+    if (existing) existing.remove();
+    
+    const div = document.createElement('div');
+    div.id = 'webhookStatus';
+    div.style.cssText = `
+        padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 500;
+        margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        ${success 
+            ? 'background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;' 
+            : 'background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;'}
+    `;
+    div.innerHTML = `${success ? '✅' : '⚠️'} ${message}`;
+    
+    const heroResult = document.getElementById('heroResult');
+    heroResult.parentNode.insertBefore(div, heroResult.nextSibling);
 }
 
 // ═══════════════════════════════════════════════════════════════
