@@ -786,7 +786,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="calc-footer">
+    <div class="calc-footer" id="calcFooter">
         <strong>Disclaimer:</strong> This calculator provides estimates for informational purposes only and should not be considered tax, legal, or financial advice.
         Tax situations vary. Consult a qualified tax professional for personalized guidance.
         <br>Based on 2026 IRS tax brackets, OBBBA updates, and Revenue Procedure 2025-32.
@@ -819,6 +819,7 @@ const LICENSES = [
         webhook: "",
         ctaUrl: "#",
         ctaText: "📞 Schedule a Tax Consultation",
+        footerText: "<strong>Disclaimer:</strong> This calculator provides estimates for informational purposes only and should not be considered tax, legal, or financial advice. Tax situations vary. Consult a qualified tax professional for personalized guidance.<br>Based on 2026 IRS tax brackets, OBBBA updates, and Revenue Procedure 2025-32.",
         expires: "2027-12-31",
         status: "active"
     },
@@ -831,6 +832,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://mcnealtax.com/schedule",
         ctaText: "📞 Book Your Free Consultation",
+        footerText: "<strong>Disclaimer:</strong> This calculator provides estimates for informational purposes only and should not be considered tax, legal, or financial advice. For personalized tax guidance, consult with McNeal Tax & Associates.<br>Based on 2026 IRS tax brackets and current federal tax law.",
         expires: "2027-12-31",
         status: "active"
     },
@@ -843,6 +845,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/GElR6TDzWPRNgaNTWroH/webhook-trigger/980d8ffa-0e9c-4336-83bb-80bba1d645c1",
         ctaUrl: "https://www.swiftexpresstax.com/file-today",
         ctaText: "📞 File Your Taxes Today",
+        footerText: "<strong>Disclaimer:</strong> This tool provides estimated tax calculations for informational purposes only. Swift Express Tax recommends consulting with our team for a personalized tax strategy.<br>Based on 2026 IRS tax brackets and current federal tax law.",
         expires: "2027-12-31",
         status: "active"
     },
@@ -855,6 +858,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
         ctaUrl: "https://dixonfinancial.com/contact",
         ctaText: "📞 Get Expert Tax Help",
+        footerText: "<strong>Disclaimer:</strong> This calculator is for estimation purposes only and does not constitute financial or tax advice. Contact Dixon Financial for professional assistance with your quarterly tax obligations.<br>Based on 2026 IRS tax brackets and current federal tax law.",
         expires: "2027-12-31",
         status: "active"
     },
@@ -867,18 +871,7 @@ const LICENSES = [
         webhook: "https://services.leadconnectorhq.com/hooks/5EBX8edQSVZYRxhd5KMc/webhook-trigger/1604d0d6-be27-438e-b618-b2ff47ac6e94",
         ctaUrl: "https://api.leadconnectorhq.com/widget/bookings/ttxtaxproblems",
         ctaText: "📞 Book Your Free Tax Consultation",
-        expires: "2027-12-31",
-        status: "active"
-    },
-    {
-        key: "QETC-tanksley2026",
-        client: "Tanksleys Financial Group Services",
-        domain: "tanksleystaxexpress.com",
-        logo: "",
-        primaryColor: "#159F25",
-        webhook: "https://services.leadconnectorhq.com/hooks/5EBX8edQSVZYRxhd5KMc/webhook-trigger/59439604-2bd0-4407-ac37-10caa41091f6",
-        ctaUrl: "https://link.apisystem.tech/widget/form/papYou47VFQPSnZJpaLz",
-        ctaText: "📞 Start My Tax Intake Now",
+        footerText: "<strong>Disclaimer:</strong> This calculator provides estimated quarterly tax payments for informational purposes only. For personalized tax planning and professional guidance, schedule a consultation with Tanksleys Financial Group Services.<br>Based on 2026 IRS tax brackets and current federal tax law.",
         expires: "2027-12-31",
         status: "active"
     }
@@ -980,6 +973,9 @@ function applyBranding(lic) {
     }
     if (lic.ctaUrl) {
         document.getElementById('ctaLink').href = lic.ctaUrl;
+    }
+    if (lic.footerText) {
+        document.getElementById('calcFooter').innerHTML = lic.footerText + '<br><br><span id="poweredBy" style="opacity:0.5;">Powered by Quarterly Tax Calculator</span>';
     }
 }
 
